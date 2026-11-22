@@ -213,12 +213,33 @@ select.who.has{font-weight:600;padding:6px 11px}
 @keyframes dopen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .dhint{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 0}
 @media(prefers-reduced-motion:reduce){.dcard{animation:none}.dtile{transition:none}}
+.welcome{margin:10px 0 12px;padding:14px 14px 12px;border-radius:22px;background:rgba(255,255,255,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 1px 2px rgba(0,0,0,.05),inset 0 0 0 1px rgba(255,255,255,.7)}
+.welcome p{margin:0}
+.w-hi{font-size:22px;font-weight:700;letter-spacing:-.015em}
+.w-sub{margin-top:4px!important;font-size:14.5px;line-height:1.4;color:var(--muted)}
+.w-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.w-chips span{font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:99px;background:rgba(255,149,0,.14);color:#a85a00}
+.w-me{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:nowrap}
+.w-me label{font-weight:600}
+.w-me select{flex:0 1 130px;min-width:0}
+.w-go{white-space:nowrap}
+.w-go{border:0;border-radius:99px;background:var(--accent);color:#fff;font:inherit;font-weight:600;font-size:15px;padding:9px 12px;font-size:14px;cursor:pointer}
+.w-go[hidden]{display:none}
+.w-msg{margin-top:10px!important;font-size:14.5px;font-weight:600;color:#a85a00}
+@media(prefers-color-scheme:dark){.welcome{background:rgba(44,44,46,.6);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}.w-chips span{background:rgba(255,159,10,.2);color:#ffb340}.w-msg{color:#ffb340}}
 </style>
 </head>
 <body>
 <header>
   <h1>Thanksgiving</h1>
   <div class="count" id="count">2026</div><span class="live" id="live"></span>
+  <div class="welcome" id="welcome">
+    <p class="w-hi"><span id="wHi">Welcome, friends &amp; family!</span> 🧡</p>
+    <p class="w-sub">So glad you're here! Our whole weekend lives on this page, and every little thing you add or tick off helps. Thank you!</p>
+    <div class="w-chips"><span>📅 Nightly stays</span><span>🛒 Tick as you buy</span><span>🎲 Add games &amp; topics</span></div>
+    <div class="w-me"><label for="me">I'm</label><select id="me"><option value="">pick your name</option></select><button class="w-go" data-act="myList" hidden>See my shopping list →</button></div>
+    <p class="w-msg" id="wMsg"></p>
+  </div>
   <div class="prog"><div class="lbl"><span>Shopping</span><b id="stShop">0 / 0</b></div><div class="bar"><i id="brShop"></i></div></div>
 </header>
 <nav><div class="seg" id="tabs"><i class="thumb"></i>
@@ -494,6 +515,16 @@ function renderCount(){
 }
 
 // ---------- rendering ----------
+let me="";
+try{ me=localStorage.getItem("tg26-me")||""; }catch(e){}
+function renderWelcome(){
+  const sh=shopRows(), sd=sh.filter(r=>r.done).length, n=sh.length, p=n?sd/n:0;
+  const sel=$("#me"); if(sel&&!sel.dataset.ok){ sel.dataset.ok=1; sel.innerHTML='<option value="">pick your name</option>'+NAMES.map(x=>`<option>${esc(x)}</option>`).join(""); }
+  if(sel) sel.value=me;
+  $("#wHi").textContent=me?`Hi ${me}, welcome!`:"Welcome, friends & family!";
+  const go=document.querySelector(".w-go"); if(go){ go.hidden=!me; if(me){ const c=sh.filter(r=>whoList(r).includes(me)).length; go.textContent=c?`See my ${c} item${c===1?"":"s"} →`:"Browse the shopping list →"; } }
+  $("#wMsg").textContent=!n?"Everything's planned. Let's make it a great one! 🦃":sd===n?"All shopped! Time to feast. You're all wonderful! 🎉":p>=.5?`More than halfway: ${sd} of ${n} items done. Amazing teamwork! 🙌`:sd>0?`${sd} of ${n} items already bought. Great start, thank you! 💛`:"Nothing's been ticked yet, so you can be the first. 🛒";
+}
 function renderStats(){
   const sh=shopRows(), sd=sh.filter(r=>r.done).length;
   $("#stShop").textContent=sd+" / "+sh.length; $("#brShop").style.width=(sh.length?sd/sh.length*100:0)+"%";
@@ -613,7 +644,7 @@ function renderAll(){
   if(f){ const el=findByKey(f.k); if(el&&el.tagName!=="SELECT"){ if(el.value!==f.v) el.value=f.v; el.focus({preventScroll:true}); try{ el.setSelectionRange(f.s,f.e); }catch(e){} autosize(); } }
 }
 function renderAllInner(){
-  [renderCount,renderStats,renderSched,renderShop,renderGames,renderTopics].forEach(f=>{ try{ f(); }catch(e){ console.error(f.name,e); } });
+  [renderCount,renderWelcome,renderStats,renderSched,renderShop,renderGames,renderTopics].forEach(f=>{ try{ f(); }catch(e){ console.error(f.name,e); } });
   fresh.clear(); freshCheck.clear();
 }
 function requestRender(){ const a=document.activeElement; if(a&&a.matches&&a.matches("select,input.who")) pending=true; else renderAll(); }
@@ -644,6 +675,7 @@ document.addEventListener("click",e=>{
     case "del":
       if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="sure?"; setTimeout(()=>{delete b.dataset.armed;b.textContent="×";},3000); return; }
       { const rowEl=b.closest(".row"); if(rowEl) rowEl.classList.add("out"); const c=b.dataset.c,id=b.dataset.id; setTimeout(()=>remove(c,id),rowEl?230:0); } break;
+    case "myList":{ fWho=me||"all"; showTab("shopping"); renderShop(); break; }
     case "pickDay":{ const d=+b.dataset.day; selDay=(d===selDay||d<0)?-1:d; renderAll(); break; }
     case "toggleAdd":{
       const a=b.closest(".adder"), k=a.dataset.adder, open=a.classList.toggle("open");
@@ -673,6 +705,7 @@ document.addEventListener("keydown",e=>{
 document.addEventListener("change",e=>{
   const t=e.target;
   if(t.id==="fStore"){ fStore=t.value; renderShop(); return; }
+  if(t.id==="me"){ me=t.value; try{ localStorage.setItem("tg26-me",me); }catch(e){} renderWelcome(); return; }
   if(t.id==="fWho"){ fWho=t.value; renderShop(); return; }
   if(t.id==="fState"){ fState=t.value; renderShop(); return; }
   if(t.tagName==="SELECT"&&t.classList.contains("who")){
