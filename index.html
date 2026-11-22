@@ -327,7 +327,10 @@ html,body{overflow-x:hidden}
 .hrow .row.dragging{background:color-mix(in srgb,var(--c,#d9531e) 22%,var(--card))}
 body.is-dragging{user-select:none;-webkit-user-select:none}
 .coming{margin:14px 0 6px}
-.ci-head{display:flex;justify-content:space-between;align-items:baseline}
+.ci-head{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;border:0;background:transparent;font:inherit;padding:6px 0;cursor:pointer;color:inherit;text-align:left}
+.ci-head span{margin-left:auto}
+.chev{font-style:normal;font-size:20px;line-height:1;color:var(--muted);transition:transform .25s;display:inline-block;transform:translateY(-3px)}
+.chev.up{transform:rotate(180deg) translateY(3px)}
 .ci-head b{font-family:ui-serif,"New York",Georgia,serif;font-size:19px;color:var(--ct,#7a2e0e)}
 .ci-head span{font-size:13.5px;color:var(--muted);font-weight:600}
 .ci-sum{font-size:13px;color:var(--muted);margin:2px 0 10px}
@@ -643,6 +646,7 @@ function renderCount(){ $("#count").textContent=startMsg(); }
 
 // ---------- rendering ----------
 let annEditing=false;
+const ciOpen=new Set();
 function renderAnnounce(){
   const el=$("#announce"); if(!el) return;
   const a=D.plan.announce, txt=a&&a.text||"";
@@ -689,11 +693,11 @@ function renderSched(){
     return `<div class="card dcard tint${di===todayIdx?" today":""}" style="--c:${DAYCOL[di]}">
       <button class="dclose" data-act="pickDay" data-day="-1" title="Close">×</button><h2 class="dayh"><span class="ico">${DAYEMOJI[di]}</span> ${esc(label)}${di===todayIdx?'<span class="tag">TODAY</span>':""}</h2>
       <div class="stay">🏠 Night stay at <input data-c="plan" data-id="stay${di}" data-f="place" data-kind="stay" data-day="${di}" value="${esc(place)}" placeholder="who?" style="width:${Math.max(5,Math.round(place.length*0.9)+1)}ch">'s place</div>
-      <div class="coming">${(()=>{ const here=inRows(di), by=new Map(here.map(r=>[r.name,r])), all=[...NAMES,...here.map(r=>r.name).filter(n=>!NAMES.includes(n))], tm=t=>new Date(t).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}), nm=here.length;
-        return `<div class="ci-head"><b>Check-in</b><span>${nm} of ${all.length} here</span></div>`
-          +(nm>1?`<div class="ci-sum">First <b>${esc(here[0].name)}</b> · Latest <b>${esc(here[nm-1].name)}</b></div>`:'<div class="ci-sum">Tap your name when you arrive</div>')
-          +`<div class="ci-grid">${all.map(n=>{ const r=by.get(n); return r?`<button class="ci on" data-act="toggleIn" data-day="${di}" data-name="${esc(n)}" data-id="${r.id}"><span class="ci-n">${esc(n)}</span><span class="ci-t">${tm(r.at)}</span></button>`:`<button class="ci" data-act="toggleIn" data-day="${di}" data-name="${esc(n)}"><span class="ci-n">${esc(n)}</span><span class="ci-t"></span></button>`; }).join("")}</div>`
-          +`<input class="cm-add" list="names" data-day="${di}" placeholder="Someone else…" enterkeyhint="done" autocomplete="off">`; })()}</div>
+      <div class="coming">${(()=>{ const here=inRows(di), by=new Map(here.map(r=>[r.name,r])), rest=[...NAMES,...here.map(r=>r.name).filter(n=>!NAMES.includes(n))].filter(n=>!by.has(n)).sort((x,y)=>x.localeCompare(y)), total=here.length+rest.length, open=ciOpen.has(di), tm=t=>new Date(t).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}), nm=here.length;
+        const tile=(n,r)=>r?`<button class="ci on" data-act="toggleIn" data-day="${di}" data-name="${esc(n)}" data-id="${r.id}"><span class="ci-n">${esc(n)}</span><span class="ci-t">${tm(r.at)}</span></button>`:`<button class="ci" data-act="toggleIn" data-day="${di}" data-name="${esc(n)}"><span class="ci-n">${esc(n)}</span><span class="ci-t"></span></button>`;
+        return `<button class="ci-head" data-act="toggleCI" data-day="${di}" aria-expanded="${open}"><b>Check-in</b><span>${nm} of ${total} here</span><i class="chev${open?" up":""}">⌄</i></button>`
+          +(nm>1?`<div class="ci-sum">First <b>${esc(here[0].name)}</b> · Latest <b>${esc(here[nm-1].name)}</b></div>`:(open?'<div class="ci-sum">Tap your name when you arrive</div>':""))
+          +(open?`<div class="ci-grid">${here.map(r=>tile(r.name,r)).join("")}${rest.map(n=>tile(n,null)).join("")}</div><input class="cm-add" list="names" data-day="${di}" placeholder="Someone else…" enterkeyhint="done" autocomplete="off">`:""); })()}</div>
       ${meals||""}
       <div class="adder${openAdd.has("day"+di)?" open":""}" data-adder="day${di}">
         <button class="plus" data-act="toggleAdd"><span class="pi">＋</span> Add a dish or plan</button>
@@ -848,6 +852,7 @@ document.addEventListener("click",e=>{
     case "pickStore":{ fStore=b.dataset.store; const f=$("#fStore"); if(f) f.value=fStore; renderShop(); break; }
     case "newAnn": annEditing=true; renderAnnounce(); { const t=document.querySelector("#announce textarea"); if(t) t.focus(); } break;
     case "clearAnn": annEditing=false; remove("plan","announce"); break;
+    case "toggleCI": { const d=+b.dataset.day; if(ciOpen.has(d)) ciOpen.delete(d); else ciOpen.add(d); renderAll(); break; }
     case "toggleIn":{ if(b.dataset.id){ if(!b.dataset.armed){ b.dataset.armed="1"; const t=b.querySelector(".ci-t"), old=t.textContent; t.textContent="undo?"; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.armed; t.textContent=old; } },2500); } else remove("plan",b.dataset.id); } else addIn(+b.dataset.day,b.dataset.name); break; }
     case "outDay": remove("plan",b.dataset.id); break;
     case "enter": window.__closeHero&&window.__closeHero(); break;
