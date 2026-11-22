@@ -188,6 +188,31 @@ select.who.has{font-weight:600;padding:6px 11px}
 .live.on{color:var(--green)}
 .foot{max-width:760px;margin:0 auto;padding:0 16px 44px;text-align:center;color:var(--muted);font-size:14px}
 .linkbtn{background:none;border:0;color:var(--accent);font:inherit;cursor:pointer;padding:10px 8px}
+.dgrid{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;margin:0 -16px 14px;padding:4px 16px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.dgrid::-webkit-scrollbar{display:none}
+.dtile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:14px 14px 12px;border:0;border-radius:20px;cursor:pointer;font:inherit;color:var(--ct);
+ background:linear-gradient(155deg,color-mix(in srgb,var(--c) 20%,var(--card)),color-mix(in srgb,var(--c) 6%,var(--card)));
+ box-shadow:0 1px 2px rgba(0,0,0,.06),inset 0 0 0 1px color-mix(in srgb,var(--c) 18%,transparent);transition:transform .2s cubic-bezier(.3,1.4,.5,1),box-shadow .2s}
+.dtile:active{transform:scale(.97)}
+.dtile{flex:0 0 132px;scroll-snap-align:center;min-height:128px}
+.dtile.big{flex-basis:150px}
+.dtile.sel{box-shadow:0 6px 18px color-mix(in srgb,var(--c) 30%,transparent),0 0 0 2px var(--c)}
+.dtile.today .dt-wk{color:var(--c)}
+.dt-ico{position:absolute;top:10px;right:14px;font-size:26px}
+.dt-wk{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.dt-num{font-size:40px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.dt-num small{font-size:15px;font-weight:600;margin-left:5px;letter-spacing:0;opacity:.75}
+.dt-note{font-size:13px;font-weight:600;min-height:16px}
+.dt-meta{font-size:13px;opacity:.85;font-weight:500}
+.dt-ico{font-size:22px;top:10px;right:12px}
+.dt-meta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.dt-note{font-size:12px}
+.dclose{position:absolute;top:12px;right:12px;width:32px;height:32px;border:0;border-radius:50%;background:color-mix(in srgb,var(--c) 15%,transparent);color:var(--ct);font-size:20px;line-height:1;cursor:pointer}
+.dcard{position:relative;animation:dopen .28s ease both}
+.dcard .dayh{padding-right:40px;font-size:20px}
+@keyframes dopen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.dhint{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 0}
+@media(prefers-reduced-motion:reduce){.dcard{animation:none}.dtile{transition:none}}
 </style>
 </head>
 <body>
@@ -349,7 +374,7 @@ const wch=v=>Math.max(6,String(v||"").length+2);
 const TABCOL=["#ff9500","#34c759","#af52de","#0a84ff"];
 const PAL=["#ff9500","#ff2d55","#af52de","#0a84ff","#34c759","#30b0c7","#ffcc00"];
 const D={items:{},games:{},plan:{}};
-let db=null, pending=false, fStore="all", fState="all", q="";
+let selDay=1, db=null, pending=false, fStore="all", fState="all", q="";
 const openAdd=new Set(), fresh=new Set(), freshCheck=new Set();
 const seeding={items:false,games:false,plan:false};
 const $=s=>document.querySelector(s);
@@ -453,7 +478,21 @@ function renderStats(){
 function renderSched(){
   const now=new Date(), todayIdx=(now.getFullYear()===2026&&now.getMonth()===10&&now.getDate()>=25&&now.getDate()<=29)?now.getDate()-25:-1;
   const dishes=rows("plan",v=>v.kind==="dish").sort((a,b)=>a.ord-b.ord);
-  $("#v-schedule").innerHTML=DAYS.map((label,di)=>{
+  const tiles=DAYS.map((label,di)=>{
+    const m=label.match(/^(\w+) (\d+) (\w+)(?: · (.+))?$/)||[label,"","","",""];
+    const place=(D.plan["stay"+di]||{}).place||"";
+    const n=dishes.filter(r=>r.day===di).length;
+    return `<button class="dtile tint${di===selDay?" sel":""}${di===todayIdx?" today":""}${di===1?" big":""}" style="--c:${DAYCOL[di]}" data-act="pickDay" data-day="${di}" aria-pressed="${di===selDay}">
+      <span class="dt-ico">${DAYEMOJI[di]}</span>
+      <span class="dt-wk">${esc(m[1])}${di===todayIdx?' · TODAY':""}</span>
+      <span class="dt-num">${esc(m[2])}<small>${esc(m[3])}</small></span>
+      <span class="dt-note">${esc(m[4]||"")}</span>
+      <span class="dt-meta">${place?`🏠 ${esc(place)}`:"🏠 —"}</span>
+      <span class="dt-meta">${n} item${n===1?"":"s"}</span>
+    </button>`;
+  }).join("");
+  const detail=DAYS.map((label,di)=>{
+    if(di!==selDay) return "";
     const stay=D.plan["stay"+di]||{place:""};
     const place=stay.place||"";
     const meals=[["Brunch","🥞 Brunch"],["Dinner","🍛 Dinner"]].map(([m,lab])=>{
@@ -461,7 +500,7 @@ function renderSched(){
       return its.length?`<div class="meal">${lab}</div>`+its.map(r=>`<div class="row${fresh.has(r.id)?" new":""}"><textarea class="edit" rows="1" data-c="plan" data-id="${r.id}" data-f="text">${esc(r.text)}</textarea><button class="del" data-act="del" data-c="plan" data-id="${r.id}" title="Remove">×</button></div>`).join(""):"";
     }).join("");
     return `<div class="card dcard tint${di===todayIdx?" today":""}" style="--c:${DAYCOL[di]}">
-      <h2 class="dayh"><span class="ico">${DAYEMOJI[di]}</span> ${esc(label)}${di===todayIdx?'<span class="tag">TODAY</span>':""}</h2>
+      <button class="dclose" data-act="pickDay" data-day="-1" title="Close">×</button><h2 class="dayh"><span class="ico">${DAYEMOJI[di]}</span> ${esc(label)}${di===todayIdx?'<span class="tag">TODAY</span>':""}</h2>
       <div class="stay">🏠 Night stay at <input data-c="plan" data-id="stay${di}" data-f="place" data-kind="stay" data-day="${di}" value="${esc(place)}" placeholder="who?" style="width:${Math.max(5,Math.round(place.length*0.9)+1)}ch">'s place</div>
       ${meals||""}
       <div class="adder${openAdd.has("day"+di)?" open":""}" data-adder="day${di}">
@@ -473,6 +512,9 @@ function renderSched(){
         </div></div></div>
       </div></div>`;
   }).join("");
+  const old=$("#v-schedule .dgrid"), keep=old?old.scrollLeft:null;
+  $("#v-schedule").innerHTML=`<div class="dgrid">${tiles}</div>`+(detail||'<p class="dhint">Tap a day to see the plan</p>');
+  const g=$("#v-schedule .dgrid"); if(g){ if(keep!==null) g.scrollLeft=keep; else { const t=g.querySelector(".sel"); if(t) g.scrollLeft=t.offsetLeft-(g.clientWidth-t.offsetWidth)/2; } }
 }
 function shopRow(r){
   return `<div class="row${fresh.has(r.id)?" new":""}${freshCheck.has(r.id)?" ck":""}">
@@ -572,6 +614,7 @@ document.addEventListener("click",e=>{
     case "del":
       if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="sure?"; setTimeout(()=>{delete b.dataset.armed;b.textContent="×";},3000); return; }
       { const rowEl=b.closest(".row"); if(rowEl) rowEl.classList.add("out"); const c=b.dataset.c,id=b.dataset.id; setTimeout(()=>remove(c,id),rowEl?230:0); } break;
+    case "pickDay":{ const d=+b.dataset.day; selDay=(d===selDay||d<0)?-1:d; renderAll(); break; }
     case "toggleAdd":{
       const a=b.closest(".adder"), k=a.dataset.adder, open=a.classList.toggle("open");
       if(open) openAdd.add(k); else openAdd.delete(k);
