@@ -238,6 +238,37 @@ body{background:linear-gradient(180deg,#faf2e6 0%,#f8e4c6 100%) fixed}
 header{padding-bottom:6px}
 header h1{font-size:24px}
 @media(prefers-color-scheme:dark){body{background:linear-gradient(180deg,#1d1510 0%,#2a1a10 100%) fixed}.pagehead h2{color:#ffd9a8}.pagehead p{color:#f3c39a}.card{background:rgba(42,31,23,.94)}#backdrop svg{opacity:.5}}
+header{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding-top:max(14px,env(safe-area-inset-top));padding-bottom:6px}
+header h1{font-size:20px}
+header .count{margin:0;font-size:13px;padding:3px 10px}
+header .prog{display:none}
+.live{margin-left:auto}
+.scene{position:relative;height:clamp(210px,34vh,320px);border-radius:26px;overflow:hidden;margin:4px 0 0;box-shadow:0 10px 28px rgba(122,46,14,.18)}
+.scene-art,.scene-art svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.scene-t{position:absolute;left:16px;top:12px;display:flex;flex-direction:column;color:#5a210b;text-shadow:0 1px 8px rgba(255,240,220,.6)}
+.scene-t b{font-family:ui-serif,"New York",Georgia,serif;font-size:21px}
+.scene-t span{font-size:12.5px;opacity:.85}
+main section>:first-child{position:relative;z-index:2;margin-top:-40px!important}
+.dtile{flex:0 0 104px!important;min-height:104px!important;padding:10px 11px!important}
+.dtile.big{flex-basis:118px!important}
+.dtile .dt-num,.dtile.big .dt-num{font-size:30px}
+.dtile .dt-ico{font-size:18px;top:8px;right:10px}
+.dtile .dt-note,.dtile .dt-meta:last-child{display:none}
+.dgrid{padding-bottom:6px!important}
+.srow{display:flex;gap:10px;overflow-x:auto;margin:0 -16px 12px;padding:4px 16px 8px;scrollbar-width:none}
+.srow::-webkit-scrollbar{display:none}
+.schip{flex:0 0 auto;min-width:92px;display:flex;flex-direction:column;align-items:flex-start;gap:1px;border:0;border-radius:18px;padding:10px 12px;font:inherit;cursor:pointer;color:var(--ct,#7a2e0e);background:linear-gradient(155deg,color-mix(in srgb,var(--c,#8a7560) 22%,#fffdf8),color-mix(in srgb,var(--c,#8a7560) 7%,#fffdf8));box-shadow:0 2px 8px rgba(122,46,14,.1),inset 0 0 0 1px color-mix(in srgb,var(--c,#8a7560) 18%,transparent)}
+.schip.sel{box-shadow:0 5px 16px color-mix(in srgb,var(--c,#d9531e) 32%,transparent),0 0 0 2px var(--c,#d9531e)}
+.schip .e{font-size:20px}.schip b{font-size:14px}.schip small{font-size:12px;opacity:.8}
+#fStore{display:none}
+.hrow{display:flex!important;gap:10px;overflow-x:auto;padding:2px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:none}
+.hrow::-webkit-scrollbar{display:none}
+.hrow .row{flex:0 0 auto;min-width:130px;max-width:230px;border:0!important;border-radius:16px;background:color-mix(in srgb,var(--c,#d9531e) 13%,var(--card));padding:10px 6px 10px 10px!important;align-items:flex-start;scroll-snap-align:start}
+.hrow .row .dot{display:none}
+.hrow .gname,.hrow .txt{font-size:15px}
+@media(prefers-color-scheme:dark){.scene-t{color:#ffe3c4;text-shadow:0 1px 8px rgba(0,0,0,.5)}.schip{color:#ffd9a8;background:color-mix(in srgb,var(--c,#8a7560) 24%,#2a1f17)}}
+.scene-t.light{color:#fff6e8;text-shadow:0 1px 8px rgba(60,20,10,.45)}
+.foot .linkbtn{background:rgba(255,253,248,.9);color:#7a2e0e;border-radius:99px;padding:8px 14px;margin:2px;font-weight:600}
 </style>
 </head>
 <body>
@@ -272,11 +303,12 @@ header h1{font-size:24px}
 </div></nav>
 <main>
   <div id="notice" class="notice hide"></div>
-  <div class="pagehead" id="pagehead"><span class="ph-ico" id="phIco"></span><h2 id="phTitle"></h2><p id="phSub"></p></div>
+  <div class="scene" id="scene"><div class="scene-art" id="sceneArt"></div><div class="scene-t"><b id="stT"></b><span id="stS"></span></div></div>
 
   <section id="v-schedule"></section>
 
   <section id="v-shopping" class="hide">
+    <div class="srow" id="srow"></div>
     <div class="card">
       <div class="filters">
         <input id="q" type="search" placeholder="🔍 Search the list">
@@ -299,12 +331,8 @@ header h1{font-size:24px}
   </section>
 
   <section id="v-games" class="hide">
-    <div class="card picker">
-      <button class="big" data-act="spinG">🎲 Pick a game for us</button>
-      <div class="result" id="gResult"></div>
-    </div>
     <div class="card">
-      <div id="gList"></div>
+      <div id="gList" class="hrow"></div>
       <div class="adder" data-adder="games">
         <button class="plus" data-act="toggleAdd"><span class="pi">＋</span> Add a game</button>
         <div class="addwrap"><div class="addinner"><div class="addrow">
@@ -313,15 +341,16 @@ header h1{font-size:24px}
         </div></div></div>
       </div>
     </div>
+  
+    <div class="card picker">
+      <button class="big" data-act="spinG">🎲 Pick a game for us</button>
+      <div class="result" id="gResult"></div>
+    </div>
   </section>
 
   <section id="v-topics" class="hide">
-    <div class="card picker">
-      <button class="big" data-act="spinT">💬 Surprise me</button>
-      <div class="result" id="tResult"></div>
-    </div>
     <div class="card">
-      <div id="tList"></div>
+      <div id="tList" class="hrow"></div>
       <div class="adder" data-adder="topics">
         <button class="plus" data-act="toggleAdd"><span class="pi">＋</span> Add a topic</button>
         <div class="addwrap"><div class="addinner"><div class="addrow">
@@ -329,6 +358,11 @@ header h1{font-size:24px}
           <button class="add" data-act="addT">Add</button>
         </div></div></div>
       </div>
+    </div>
+  
+    <div class="card picker">
+      <button class="big" data-act="spinT">💬 Surprise me</button>
+      <div class="result" id="tResult"></div>
     </div>
   </section>
 </main>
@@ -531,11 +565,7 @@ function spin(list,out){
   };
   step();
 }
-function renderCount(){
-  const now=new Date(), today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  const days=Math.round((new Date(2026,10,26)-today)/86400000);
-  $("#count").textContent=days>1?`${days} days to go`:days===1?"Tomorrow!":days===0?"Happy Thanksgiving! 🎉":days>-4?"Thanksgiving weekend":"2026";
-}
+function renderCount(){ $("#count").textContent=startMsg(); }
 
 // ---------- rendering ----------
 function renderStats(){
@@ -615,9 +645,12 @@ function renderShop(){
     && (fState==="all"||(fState==="done")===!!r.done)
     && (!q||(r.text+" "+whoBuys(r)+" "+r.store).toLowerCase().includes(q)));
   const stores=[...new Set([...STORES,...all.map(r=>r.store)])];
+  { const chip=(k,e,name,n,c)=>`<button class="schip${fStore===k?" sel":""}" style="--c:${c}" data-act="pickStore" data-store="${esc(k)}"><span class="e">${e}</span><b>${esc(name)}</b><small>${n} left</small></button>`;
+    const left=st=>all.filter(r=>(st==="all"||r.store===st)&&!r.done).length;
+    $("#srow").innerHTML=chip("all","🧺","Everything",left("all"),"#d9531e")+stores.filter(st=>all.some(r=>r.store===st)).map(st=>chip(st,STOREEMOJI[st]||"🛒",st,left(st),STORECOL[st]||"#8a7560")).join(""); }
   let html="";
   stores.forEach(st=>{
-    const its=list.filter(r=>r.store===st); if(!its.length) return;
+    const its=list.filter(r=>r.store===st).sort((x,y)=>(!!x.done)-(!!y.done)); if(!its.length) return;
     const d=its.filter(r=>r.done).length, all_=its.length;
     html+=`<div class="store tint" style="--c:${STORECOL[st]||"#8a7560"}"><div class="store-h"><b><span class="ico sm">${STOREEMOJI[st]||"🛒"}</span>${esc(st)}</b><span>${d===all_?"🎉 all bought":d+" of "+all_+" bought"}</span></div>
       <div class="mini"><i style="width:${d/all_*100}%"></i></div>
@@ -669,16 +702,29 @@ function requestRender(){ const a=document.activeElement; if(a&&a.matches&&a.mat
   let seen=false; try{ seen=sessionStorage.getItem("tg26-hero")==="1"; }catch(e){}
   if(seen||location.hash){ h.classList.add("gone"); return; }
   document.body.style.overflow="hidden";
-  const now=new Date(), today=new Date(now.getFullYear(),now.getMonth(),now.getDate()), d=Math.round((new Date(2026,10,26)-today)/86400000);
-  document.getElementById("hCount").textContent=d>1?d+" days to go":d===1?"Tomorrow!":d===0?"Today's the day!":"Hope it's a lovely weekend";
+  document.getElementById("hCount").textContent=startMsg();
   window.__closeHero=function(){ h.classList.add("gone"); document.body.style.overflow=""; try{ sessionStorage.setItem("tg26-hero","1"); }catch(e){} };
 })();
 
 // ---------- tabs ----------
+const SCENES={
+schedule:`<svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fcdcaa"/><stop offset="1" stop-color="#f1a066"/></linearGradient></defs><rect width="400" height="260" fill="url(#a1)"/><circle cx="310" cy="80" r="62" fill="#ffe9bd" opacity=".35"/><circle cx="310" cy="80" r="38" fill="#fff0cf"/><path d="M0 190 Q100 140 210 182 T400 160 V260 H0Z" fill="#e8a65d"/><path d="M0 215 Q120 175 250 210 T400 195 V260 H0Z" fill="#c8693a"/><rect x="60" y="150" width="96" height="64" fill="#8a3b1c"/><polygon points="50,152 108,106 166,152" fill="#5a210b"/><rect x="96" y="178" width="22" height="36" rx="3" fill="#3a1a08"/><rect x="70" y="164" width="18" height="18" rx="2" fill="#ffd36b"/><rect x="128" y="164" width="18" height="18" rx="2" fill="#ffd36b"/><rect x="138" y="116" width="12" height="28" fill="#5a210b"/><g><rect x="226" y="170" width="8" height="42" fill="#5a210b"/><circle cx="230" cy="150" r="30" fill="#d9531e"/><circle cx="214" cy="164" r="20" fill="#e3a008"/><circle cx="248" cy="162" r="22" fill="#b3263e"/><rect x="300" y="182" width="7" height="32" fill="#5a210b"/><circle cx="304" cy="166" r="22" fill="#e3a008"/><circle cx="292" cy="176" r="15" fill="#d9531e"/></g><path d="M40 60c12-14 28-12 32 4-14 3-24 2-32-4z" fill="#d9531e"/><path d="M180 40c10-12 24-10 28 4-12 3-20 2-28-4z" fill="#b3263e"/><path d="M360 150c8-10 20-8 22 4-9 2-15 1-22-4z" fill="#e3a008"/></svg>`,
+shopping:`<svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe3c2"/><stop offset="1" stop-color="#f2b078"/></linearGradient></defs><rect width="400" height="260" fill="url(#a2)"/><rect y="200" width="400" height="60" fill="#c8693a" opacity=".55"/><circle cx="120" cy="120" r="26" fill="#b3263e"/><path d="M120 94c0-10 6-16 14-18" stroke="#5a3a1a" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="200" cy="112" rx="40" ry="34" fill="#d9531e"/><path d="M180 82q-8 34 0 62M200 78v68M220 82q8 34 0 62" stroke="#a63d10" stroke-width="3" fill="none"/><rect x="195" y="68" width="10" height="14" rx="3" fill="#6b8e3d"/><path d="M262 140l24-62 20 8z" fill="#e07a1f"/><path d="M288 142l30-52 16 12z" fill="#e8892e"/><circle cx="305" cy="86" r="12" fill="#6b8e3d"/><circle cx="326" cy="92" r="10" fill="#7fa04a"/><path d="M70 150 Q200 120 330 150 L305 232 Q200 250 95 232Z" fill="#b8793a"/><path d="M80 170Q200 190 322 170M86 192Q200 212 316 192M92 214Q200 232 310 214" stroke="#8c5a24" stroke-width="3" fill="none"/><path d="M100 150 Q200 40 300 150" stroke="#8c5a24" stroke-width="6" fill="none" stroke-linecap="round" opacity=".0"/></svg>`,
+games:`<svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7a2e4a"/><stop offset="1" stop-color="#e0662a"/></linearGradient></defs><rect width="400" height="260" fill="url(#a3)"/><g transform="rotate(-14 130 140)"><rect x="80" y="90" width="100" height="100" rx="20" fill="#fff6e8"/><g fill="#7a2e0e"><circle cx="108" cy="118" r="8"/><circle cx="152" cy="118" r="8"/><circle cx="130" cy="140" r="8"/><circle cx="108" cy="162" r="8"/><circle cx="152" cy="162" r="8"/></g></g><g transform="rotate(12 250 150)"><rect x="210" y="110" width="84" height="84" rx="18" fill="#fff6e8"/><g fill="#b3263e"><circle cx="234" cy="134" r="7"/><circle cx="270" cy="170" r="7"/><circle cx="252" cy="152" r="7"/></g></g><g><g transform="rotate(-22 330 80)"><rect x="300" y="36" width="56" height="78" rx="9" fill="#fff6e8"/><circle cx="328" cy="75" r="12" fill="#b3263e"/></g><g transform="rotate(-6 340 86)"><rect x="312" y="38" width="56" height="78" rx="9" fill="#fff6e8"/><circle cx="340" cy="77" r="12" fill="#e3a008"/></g></g><g fill="#ffe9bd"><circle cx="50" cy="50" r="4"/><circle cx="360" cy="200" r="3"/><circle cx="40" cy="210" r="3"/><circle cx="190" cy="40" r="3"/></g></svg>`,
+topics:`<svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fcdcaa"/><stop offset="1" stop-color="#e9a064"/></linearGradient></defs><rect width="400" height="260" fill="url(#a4)"/><path d="M-10 30Q100 70 200 34T410 30" stroke="#8a3b1c" stroke-width="2" fill="none"/><g fill="#ffd36b"><circle cx="40" cy="48" r="7"/><circle cx="110" cy="58" r="7"/><circle cx="190" cy="40" r="7"/><circle cx="270" cy="50" r="7"/><circle cx="350" cy="44" r="7"/></g><g><rect x="50" y="90" width="150" height="70" rx="22" fill="#d9531e"/><polygon points="80,158 76,186 108,158" fill="#d9531e"/><rect x="72" y="112" width="100" height="8" rx="4" fill="#fff6e8" opacity=".85"/><rect x="72" y="130" width="70" height="8" rx="4" fill="#fff6e8" opacity=".6"/></g><g><rect x="190" y="130" width="160" height="72" rx="22" fill="#6b8e3d"/><polygon points="320,200 330,226 296,200" fill="#6b8e3d"/><rect x="212" y="152" width="110" height="8" rx="4" fill="#fff6e8" opacity=".85"/><rect x="212" y="170" width="76" height="8" rx="4" fill="#fff6e8" opacity=".6"/></g><circle cx="330" cy="96" r="22" fill="#b3263e"/><path d="M320 96h20M330 86v20" stroke="#fff6e8" stroke-width="4" stroke-linecap="round"/></svg>`};
+function startMsg(){
+  const n=new Date(), t=new Date(n.getFullYear(),n.getMonth(),n.getDate()), start=new Date(2026,10,25), d=Math.round((start-t)/86400000);
+  if(d>1) return "Starts Wednesday · "+d+" days to go";
+  if(d===1) return "Starts tomorrow!";
+  if(d===0) return "It begins today! 🎉";
+  if(d===-1) return "Happy Thanksgiving! 🦃";
+  if(d>=-4) return "Thanksgiving weekend";
+  return "2026";
+}
 const PH={schedule:["🗓️","Our weekend","Where we stay and what we eat"],shopping:["🛒","Shopping list","Tick items as you buy them"],games:["🎲","Game night","Pick one, or add your own"],topics:["💬","Let's talk","Ideas for conversation"]};
 function showTab(t,fromHash){
   if(!TABS.includes(t)) t="schedule";
-  { const p=PH[t]; $("#phIco").textContent=p[0]; $("#phTitle").textContent=p[1]; $("#phSub").textContent=p[2]; }
+  { document.querySelector(".scene-t").classList.toggle("light",t==="games"); const p=PH[t]; $("#sceneArt").innerHTML=SCENES[t]; $("#stT").textContent=p[1]; $("#stS").textContent=p[2]; }
   TABS.forEach(k=>$("#v-"+k).classList.toggle("hide",k!==t));
   document.querySelectorAll("#tabs button[data-tab]").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   $("#tabs").style.setProperty("--idx",TABS.indexOf(t));
@@ -702,6 +748,7 @@ document.addEventListener("click",e=>{
     case "del":
       if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="sure?"; setTimeout(()=>{delete b.dataset.armed;b.textContent="×";},3000); return; }
       { const rowEl=b.closest(".row"); if(rowEl) rowEl.classList.add("out"); const c=b.dataset.c,id=b.dataset.id; setTimeout(()=>remove(c,id),rowEl?230:0); } break;
+    case "pickStore":{ fStore=b.dataset.store; const f=$("#fStore"); if(f) f.value=fStore; renderShop(); break; }
     case "enter": window.__closeHero&&window.__closeHero(); break;
     case "pickDay":{ const d=+b.dataset.day; selDay=(d===selDay||d<0)?-1:d; renderAll(); break; }
     case "toggleAdd":{
