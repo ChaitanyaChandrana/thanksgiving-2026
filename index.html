@@ -25,7 +25,7 @@ setTimeout(function(){ window.__resolveDb(null); },10000);
     const [{initializeApp},{getDatabase,ref,onValue,set,remove}]=await Promise.all([
       import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`),
       import(`https://www.gstatic.com/firebasejs/${V}/firebase-database.js`)]);
-    const rtdb=getDatabase(initializeApp(cfg)), base="tg2026";
+    const rtdb=getDatabase(initializeApp(cfg)), base="tg2026-v2";
     onValue(ref(rtdb,".info/connected"),s=>status(s.val()===true?"live":"offline"));
     done({
       collection:c=>({onSnapshot:cb=>onValue(ref(rtdb,base+"/"+c),snap=>{
@@ -301,55 +301,77 @@ const STORES=["Costco","Kroger / Meijer","Patel","Indian store","Halal","Other"]
 
 // [day, category, text] — from the "2026 _II" tab (Games and Topics live in their own tabs)
 const SCHED=[
-[0,"Kids","Soup and garlic bread"],[0,"Topics","Will / Trust"],[0,"Stay","Malkannola"],[0,"Games","Mafia"],[0,"Dinner","Curry Pizza House, curd"],[0,"Topics","Term insurance"],
-[1,"Games","Slip it in"],[1,"Appetizer","1/4 chicken 65"],[1,"Dinner","At-home salad"],[1,"Kids","Whole chicken (home)"],[1,"Topics","Things that could help others"],[1,"Stay","Chandrana"],
-[1,"Brunch","Idli varieties, coconut & peanut chutney, sambhar"],[1,"Games","Imposter"],[1,"Appetizer","Onion pakoda"],[1,"Dinner","Family packs: paneer, chef's biryani"],[1,"Kids","Badusha (100)"],
-[1,"Games","Wits n Wagers"],[1,"Appetizer","1/4 gobi manchurian"],[1,"Dinner","Paneer biryani family pack"],[1,"Kids","Fruit, turkey, curd"],
-[2,"Brunch","T bath, bagels, cream cheese"],[2,"Games","Codenames"],[2,"Appetizer","Dhokla"],[2,"Dinner","Jeera chawal, dal tadka, Varanasi puri, kala chana, bhendi, achar, paneer thecha, boondi raita"],
-[2,"Kids","Masala chaas"],[2,"Topics","Discussion"],[2,"Stay","Ayitha"],[2,"Games","Priya insta game"],[2,"Dinner","Halwa"],[2,"Topics","Travel"],
-[3,"Brunch","Pongal"],[3,"Games","Tarot cards"],[3,"Appetizer","Naan bites"],[3,"Dinner","Cranberry pulihora, ginger rice, pepper rice, chicken curry, veg manchurian (order from outside)"],
+[0,"Kids","Soup and garlic bread"],[0,"Topics","Will / Trust"],[0,"Stay","Malkannola"],[0,"Dinner","Curry Pizza House, curd"],[0,"Topics","Term insurance"],
+[1,"Appetizer","1/4 chicken 65"],[1,"Dinner","At-home salad"],[1,"Kids","Whole chicken (home)"],[1,"Topics","Things that could help others"],[1,"Stay","Chandrana"],
+[1,"Brunch","Idli varieties, coconut & peanut chutney, sambhar"],[1,"Appetizer","Onion pakoda"],[1,"Dinner","Family packs: paneer, chef's biryani"],[1,"Kids","Badusha (100)"],
+[1,"Appetizer","1/4 gobi manchurian"],[1,"Dinner","Paneer biryani family pack"],[1,"Kids","Fruit, turkey, curd"],
+[2,"Brunch","T bath, bagels, cream cheese"],[2,"Appetizer","Dhokla"],[2,"Dinner","Jeera chawal, dal tadka, Varanasi puri, kala chana, bhendi, achar, paneer thecha, boondi raita"],
+[2,"Kids","Masala chaas"],[2,"Topics","Discussion"],[2,"Stay","Ayitha"],[2,"Dinner","Halwa"],[2,"Topics","Travel"],
+[3,"Brunch","Pongal"],[3,"Appetizer","Naan bites"],[3,"Dinner","Cranberry pulihora, ginger rice, pepper rice, chicken curry, veg manchurian (order from outside)"],
 [3,"Kids","Brownie & ice cream"],[3,"Stay","Gireddy"],
-[4,"Brunch","Waffles & pancakes, pesarattu, coconut chutney"],[4,"Games","Newly wed"],[4,"Games","3 Monkeys"],[4,"Games","Dolphin Trainer"],[4,"Games","Exploding Kittens"]
+[4,"Brunch","Waffles & pancakes, pesarattu, coconut chutney"],
 ];
 
-// [text, store, owner, qty]
+// [text, store, owner, qty] — from the "Shopping List" tab (buyers: Costco=Chaitu, Kroger=Rakesh, Indian=Madhu)
 const SHOP=[
-["Pomegranate","Costco","","6"],["Tortilla chips","Costco","","1"],["Croissants","Costco","","4"],["Eggs","Costco","","60 pk"],["Tortilla sheets","Costco","","36 ct"],
-["Hawaiian bread (sweet)","Costco","","2"],["Tomatoes","Costco","","2"],["Mozzarella","Costco","","1 pk"],["Lemons","Costco","",""],["Whole milk","Costco","","4"],
-["Pani poori","Costco","","3"],["Sunbeam bread","Costco","","2"],["Frozen corn","Costco","","1 pk"],["Plates","Costco","","1 pk"],["Paneer","Costco","Gopi","2 blocks"],
-["Chicken drumsticks","Costco","",""],["Tilapia (foot long)","Costco","","2"],
-["Apples, grapes, brown pear, strawberries, chocolate chips","Meijer","",""],["Mixed nuts (for ice cream)","Meijer","","1 pk"],["Ritz biscuits","Meijer","",""],
-["String cheese","Meijer","",""],["Sparkling water","Meijer","",""],["Red Jello","Meijer","","2 pk"],["Water","Meijer","","3"],["Hawaiian bread (plain)","Meijer","","4"],
-["All-purpose flour","Meijer","","2 lb"],["Pizza sauce","Meijer","",""],["Olives","Meijer","",""],["Texas toast","Meijer","","4"],["Four cheese mix","Meijer","","1 pk"],
-["Frozen cookie dough","Meijer","","2 pk"],["Tomato puri","Meijer","","1 small"],["Sour cream","Meijer","","1 small"],["Cream cheese","Meijer","","1 block"],
-["Minapappu","Patel","","4 lb"],["Peanuts","Patel","","4 lb"],["Tilda basmati rice","Patel","","5 lb"],["Rooh Afza","Patel","",""],["Basil seeds","Patel","","50 g"],
-["Red Box ice cream (pista, vanilla, rose)","Patel","","3"],["Tutti frutti","Patel","",""],["Wafers","Patel","","2 pk"],["Upma rava","Patel","","4 lb"],
-["Yeast","Patel","Swetha","check first"],["Green & red peppers","Patel","",""],["Onion","Patel","","10 lb"],["Sev (for dhabeli)","Patel","","1 big pk"],["Dhabeli masala","Patel","","1 pk"],
-["Amchur powder","Patel","","1 pk"],["Potatoes","Patel","","10 lb"],["Ginger garlic paste","Patel","","1 bottle"],["Sweet chutney","Patel","",""],["Methi leaves","Patel","","1 bunch"],
-["Boiled rice","Patel","","4 lb"],["Carrots","Patel","","5 lb"],["Beans","Patel","","2 lb"],["Green peas","Patel","","2 pk"],["Shredded coconut","Patel","","1 pk"],
-["Green chillies","Patel","","2 lb"],["Cilantro","Patel","","8"],["Mint","Patel","","6"],["Ginger (raw)","Patel","","1 lb"],["Chole masala","Patel","","1"],
-["Pav bhaji masala","Patel","","1"],["Chole","Patel","","2 lb"],["Kesar","Patel","","2"],["Aashirvaad atta","Patel","","4 lb minimum"],["Vatana","Patel","","2 lb"],
-["Poori flour","Patel","Gopi","7.5 lb"],["Chole (for Gopi's dish)","Patel","Gopi","1.5 lb"],["Sooji (for pesarattu)","Patel","Gopi","2 lb"],
-["Green moong (for pesarattu)","Patel","Gopi","6.5 cups (180 ml)"],["Rice for biryani","Patel","Gopi","19 cups? (confirm)"],
-["Mutton","Indian store","","3 lb"],["Chicken for Gopi","Halal","Gopi","3 lb"],["Chicken: 1 whole + 1 lb thighs (marination)","Halal","Madhu","1 whole + 1 lb"],
-["Chicken, cut whole","Halal","Chaitu",""],["Chicken, whole","Halal","Chaitu",""],
-["Biryani: 15–17 cups","Other","Gopi",""],["Biryani: 6 cups non-veg (10 ppl) + 9 cups veg (14 ppl), incl. white rice","Other","Prashanth & Rakesh",""],
-["Amazon order","Other","Anjan & Priya",""],["Chocolate fountain","Other","Anjan & Priya",""],["Panipuri fountain","Other","Anjan & Priya",""],["Decide on ingredients","Other","Anjan & Priya",""],
-["Spoons","Costco","Chaitu",""],["Bowls","Costco","Chaitu",""],["Milk","Costco","Chaitu","8"],["Tea cups","Costco","Chaitu",""],["Apples","Costco","Chaitu","3"],
-["Grapes","Costco","Chaitu","3"],["Bananas","Costco","Chaitu","12"],["Oranges","Costco","Chaitu",""],["Cuties","Costco","Chaitu",""],["Nanak paneer","Costco","Chaitu","2"],
-["Yellow onions","Costco","Chaitu","2"],["Red onions","Costco","Chaitu","2"],["Blueberries","Costco","Chaitu",""],["Naan bites","Costco","Chaitu","2"],
-["Mexican mixed cheese","Costco","Chaitu",""],["Pomegranate 4-pack","Costco","Chaitu","4"],["Cranberries","Costco","Chaitu","2"],["Bisquick","Costco","Chaitu",""],
-["Sprite","Costco","Chaitu",""],["Thumbs Up","Costco","Chaitu",""],
-["5-gal water","Kroger","Rakesh","4"],["Texas toast (NY Company)","Kroger","Rakesh","4"],["Whipped cream","Kroger","Rakesh","6"],["Skewers","Kroger","Rakesh",""],
-["Edible eyes","Kroger","Rakesh",""],["Ghirardelli chocolate melts","Kroger","Rakesh",""],["Cheese cubes","Kroger","Rakesh","1 pk"],["Green onions","Kroger","Rakesh","1"],
-["Ghirardelli double chocolate brownie mix","Kroger","Rakesh","2"],["Purple Cow vanilla","Kroger","Rakesh","1"],["Maple syrup","Kroger","Rakesh",""],["Strawberries","Kroger","Rakesh","2"],
-["Mint (Kroger list)","Kroger","Rakesh","4"],
-["Knorr tomato soup","Indian store","Madhu","5"],["Janaki boondi","Indian store","Madhu",""],["Frozen onions (mini)","Indian store","Madhu","1"],["Frozen mullakai","Indian store","Madhu","1"],
-["Sooji","Indian store","Madhu","4 lb"],["Chillies","Indian store","Madhu","2 lb"],["North Indian achar","Indian store","Madhu",""],["Bhendi","Indian store","Madhu","4 lb"],
-["Peeled garlic (small box)","Indian store","Madhu",""],["Yellow moong dal","Indian store","Madhu","2 lb"],["Yellow pumpkin (1/4)","Indian store","Madhu",""],
-["Curry leaves","Indian store","Madhu","3"],["Ginger (Indian list)","Indian store","Madhu","2 lb"],["Green moong dal","Indian store","Madhu","4 lb"],
-["Aashirvaad atta","Indian store","Madhu","5 lb"],["Hot snacks (4 varieties)","Indian store","Madhu",""],["Channa dal","Indian store","Madhu","2 lb"],
-["Bellam (jaggery)","Indian store","Madhu","2 packs"],["Cilantro (Indian list)","Indian store","Madhu","10"],["Sona Masoori rice","Indian store","Madhu",""]
+["Spoons","Costco","",""],
+["Plates","Costco","",""],
+["Bowls","Costco","",""],
+["Milk","Costco","","8"],
+["Tea cups","Costco","",""],
+["Apples","Costco","","3"],
+["Grapes","Costco","","3"],
+["Bananas","Costco","","12"],
+["Oranges","Costco","",""],
+["Cuties","Costco","",""],
+["Tomatoes","Costco","","2"],
+["Nanak paneer","Costco","","2"],
+["Yellow onions","Costco","","2"],
+["Red onions","Costco","","2"],
+["Blueberries","Costco","",""],
+["Naan bites","Costco","","2"],
+["Mexican mixed cheese","Costco","",""],
+["Pomegranate (4-pack)","Costco","","4"],
+["Cranberries","Costco","","2"],
+["Bisquick","Costco","",""],
+["Sprite","Costco","",""],
+["5-gal water","Kroger / Meijer","","4"],
+["Texas toast (NY Company)","Kroger / Meijer","","4"],
+["Whipped cream","Kroger / Meijer","","6"],
+["Skewers","Kroger / Meijer","",""],
+["Edible eyes","Kroger / Meijer","",""],
+["Ghirardelli chocolate melts","Kroger / Meijer","",""],
+["Potatoes","Kroger / Meijer","","10 lb"],
+["Cheese cubes","Kroger / Meijer","","1 pack"],
+["Green onions","Kroger / Meijer","","1"],
+["Ghirardelli double chocolate brownie mix","Kroger / Meijer","","2"],
+["Purple Cow vanilla","Kroger / Meijer","","1"],
+["Maple syrup","Kroger / Meijer","",""],
+["Strawberries","Kroger / Meijer","","2"],
+["Mint","Kroger / Meijer","","4"],
+["Knorr tomato soup","Indian store","","5"],
+["Janaki boondi","Indian store","",""],
+["Peanuts","Indian store","","4 lb"],
+["Frozen onions (mini)","Indian store","","1"],
+["Frozen mullakai","Indian store","","1"],
+["Sooji","Indian store","","4 lb"],
+["Chillies","Indian store","","2 lb"],
+["North Indian achar","Indian store","",""],
+["Bhendi","Indian store","","4 lb"],
+["Peeled garlic (small box)","Indian store","",""],
+["Yellow moong dal","Indian store","","2 lb"],
+["Yellow pumpkin (1/4)","Indian store","",""],
+["Curry leaves","Indian store","","3"],
+["Ginger","Indian store","","2 lb"],
+["Green moong dal","Indian store","","4 lb"],
+["Aashirvaad atta","Indian store","","5 lb"],
+["Hot snacks (4 varieties)","Indian store","",""],
+["Channa dal","Indian store","","2 lb"],
+["Bellam (round)","Indian store","","2 packs"],
+["Cilantro","Indian store","","10"],
+["Sona Masoori rice","Indian store","",""],
+["Chicken, cut whole","Halal","",""],
+["Chicken, whole","Halal","",""]
 ];
 const GSEED=["Mafia","Slip it in","Imposter","Wits n Wagers","Codenames","Priya insta game","Tarot cards","Newly wed","3 Monkeys","Dolphin Trainer","Exploding Kittens"];
 
@@ -428,7 +450,7 @@ function showNotice(msg,sticky){
 }
 
 // ---------- saving ----------
-const LK=c=>"tg26-"+c+"-v2";
+const LK=c=>"tg26-"+c+"-v3";
 async function persist(c,id,obj){
   try{
     if(db){ if(obj===null) await db.doc(c+"/"+id).delete(); else await db.doc(c+"/"+id).set(obj); }
