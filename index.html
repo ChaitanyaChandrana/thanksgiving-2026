@@ -304,6 +304,23 @@ main section>:first-child{position:relative;z-index:2;margin-top:-40px!important
 html,body{overflow-x:hidden}
 .dclose{width:40px;height:40px;top:10px;right:10px}
 .dlist .dcard button.add{min-height:44px}
+#announce:empty{display:none}
+.announce{display:flex;align-items:flex-start;gap:10px;margin:4px 0 10px;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,#fff1d6,#ffe3b8);color:#6b250c;box-shadow:0 4px 14px rgba(122,46,14,.12),inset 0 0 0 1px rgba(217,83,30,.25);width:100%;font:inherit;text-align:left;border:0}
+.announce.empty{background:rgba(255,253,248,.7);color:#9a3d12;font-weight:600;font-size:14.5px;cursor:pointer;justify-content:center;box-shadow:inset 0 0 0 1.5px rgba(217,83,30,.3)}
+.announce .an-ico{font-size:22px;line-height:1.2}
+.announce .an-body{flex:1;min-width:0}
+.announce textarea{width:100%;border:0;background:transparent;resize:none;font:inherit;font-size:16px;font-weight:600;color:inherit;padding:0;line-height:1.35;overflow:hidden}
+.announce textarea:focus{outline:none}
+.announce small{display:block;font-size:11.5px;opacity:.7;margin-top:2px}
+.announce .an-x{border:0;background:rgba(122,46,14,.1);color:inherit;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;flex:none}
+.coming{margin:10px 0 4px}
+.cm-h{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ct,#9a3d12);margin-bottom:6px}
+.cm-h b{background:var(--c,#d9531e);color:#fff;border-radius:99px;padding:1px 8px;margin-left:4px;letter-spacing:0}
+.cm-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.cm-chip{display:inline-flex;align-items:center;gap:2px;padding:5px 4px 5px 11px;border-radius:99px;background:color-mix(in srgb,var(--c,#d9531e) 16%,transparent);color:var(--ct,#7a2e0e);font-size:14px;font-weight:600}
+.cm-chip button{border:0;background:transparent;color:inherit;opacity:.6;font-size:16px;width:26px;height:26px;border-radius:50%;cursor:pointer;padding:0}
+.cm-add{flex:1 1 120px;min-width:110px;border:1.5px dashed color-mix(in srgb,var(--c,#d9531e) 45%,transparent);background:transparent;border-radius:99px;padding:7px 12px;font:inherit;font-size:14px}
+@media(prefers-color-scheme:dark){.announce{background:linear-gradient(135deg,#4a2a18,#3a2214);color:#ffe3c4}.announce.empty{background:rgba(42,31,23,.7);color:#ffb27a}}
 </style>
 </head>
 <body>
@@ -338,6 +355,7 @@ html,body{overflow-x:hidden}
 </div></nav>
 <main>
   <div id="notice" class="notice hide"></div>
+  <div id="announce"></div>
   <div class="scene" id="scene"><div class="scene-art" id="sceneArt"></div><div class="scene-t"><b id="stT"></b><span id="stS"></span></div></div>
 
   <section id="v-schedule"></section>
@@ -603,6 +621,23 @@ function spin(list,out){
 function renderCount(){ $("#count").textContent=startMsg(); }
 
 // ---------- rendering ----------
+let annEditing=false;
+function renderAnnounce(){
+  const el=$("#announce"); if(!el) return;
+  const a=D.plan.announce, txt=a&&a.text||"";
+  if(!txt&&!annEditing){ el.innerHTML='<button class="announce empty" data-act="newAnn">📣 Post an announcement</button>'; return; }
+  const when=a&&a.at?new Date(a.at).toLocaleString([], {weekday:"short",hour:"numeric",minute:"2-digit"}):"";
+  el.innerHTML=`<div class="announce"><span class="an-ico">📣</span><div class="an-body"><textarea class="edit" rows="1" placeholder="Write an announcement…" data-c="plan" data-id="announce" data-f="text" data-kind="announce">${esc(txt)}</textarea>${txt&&when?`<small>Posted ${esc(when)} · tap the text to edit</small>`:""}</div>${txt?'<button class="an-x" data-act="clearAnn" title="Remove">×</button>':""}</div>`;
+}
+const inKey=(d,n)=>"in_"+d+"_"+String(n).toLowerCase().replace(/[^a-z0-9]+/g,"_");
+const inRows=d=>rows("plan",v=>v.kind==="in"&&v.day===d).sort((a,b)=>a.at-b.at);
+function addIn(d,raw){
+  let n=String(raw||"").trim(); if(!n) return;
+  n=NAMES.find(x=>x.toLowerCase()===n.toLowerCase())||n;
+  const id=inKey(d,n); if(D.plan[id]) return;
+  const o={kind:"in",day:d,name:n,at:Date.now()}; D.plan[id]=o; renderAll(); persist("plan",id,o);
+  setTimeout(()=>{ const i=document.querySelector('.cm-add[data-day="'+d+'"]'); if(i) i.focus(); },60);
+}
 function renderStats(){
   const sh=shopRows(), sd=sh.filter(r=>r.done).length;
   $("#stShop").textContent=sd+" / "+sh.length; $("#brShop").style.width=(sh.length?sd/sh.length*100:0)+"%";
@@ -619,7 +654,7 @@ function renderSched(){
       <span class="dt-wk">${esc(m[1])}${di===todayIdx?' · TODAY':""}</span>
       <span class="dt-num">${esc(m[2])}<small>${esc(m[3])}</small></span>
       <span class="dt-note">${esc(m[4]||"")}</span>
-      <span class="dt-meta">${place?`🏠 ${esc(place)}`:"🏠 —"}</span>
+      <span class="dt-meta">${place?`🏠 ${esc(place)}`:"🏠 —"}${inRows(di).length?` · 👥 ${inRows(di).length}`:""}</span>
       <span class="dt-meta">${n} item${n===1?"":"s"}</span>
     </button>`;
   });
@@ -634,6 +669,7 @@ function renderSched(){
     return `<div class="card dcard tint${di===todayIdx?" today":""}" style="--c:${DAYCOL[di]}">
       <button class="dclose" data-act="pickDay" data-day="-1" title="Close">×</button><h2 class="dayh"><span class="ico">${DAYEMOJI[di]}</span> ${esc(label)}${di===todayIdx?'<span class="tag">TODAY</span>':""}</h2>
       <div class="stay">🏠 Night stay at <input data-c="plan" data-id="stay${di}" data-f="place" data-kind="stay" data-day="${di}" value="${esc(place)}" placeholder="who?" style="width:${Math.max(5,Math.round(place.length*0.9)+1)}ch">'s place</div>
+      <div class="coming"><div class="cm-h">👥 Who's coming<b>${inRows(di).length}</b></div><div class="cm-chips">${inRows(di).map(r=>`<span class="cm-chip">${esc(r.name)}<button data-act="outDay" data-id="${r.id}" title="Remove">×</button></span>`).join("")}<input class="cm-add" list="names" data-day="${di}" placeholder="＋ add name" enterkeyhint="done" autocomplete="off"></div></div>
       ${meals||""}
       <div class="adder${openAdd.has("day"+di)?" open":""}" data-adder="day${di}">
         <button class="plus" data-act="toggleAdd"><span class="pi">＋</span> Add a dish or plan</button>
@@ -703,6 +739,7 @@ function renderTopics(){
 function uiKey(el){
   const ad=el.closest&&el.closest(".adder");
   if(ad&&el.dataset.new) return "A|"+ad.dataset.adder+"|"+el.dataset.new;
+  if(el.classList&&el.classList.contains("cm-add")) return "C|"+el.dataset.day;
   if(el.id) return "I|"+el.id;
   if(el.dataset.storewho) return "S|"+el.dataset.storewho;
   if(el.dataset.c&&el.dataset.id&&el.dataset.f) return "F|"+el.dataset.c+"|"+el.dataset.id+"|"+el.dataset.f;
@@ -723,7 +760,7 @@ function renderAll(){
   if(f){ const el=findByKey(f.k); if(el&&el.tagName!=="SELECT"){ if(el.value!==f.v) el.value=f.v; el.focus({preventScroll:true}); try{ el.setSelectionRange(f.s,f.e); }catch(e){} autosize(); } }
 }
 function renderAllInner(){
-  [renderCount,renderStats,renderSched,renderShop,renderGames,renderTopics].forEach(f=>{ try{ f(); }catch(e){ console.error(f.name,e); } });
+  [renderCount,renderAnnounce,renderStats,renderSched,renderShop,renderGames,renderTopics].forEach(f=>{ try{ f(); }catch(e){ console.error(f.name,e); } });
   fresh.clear(); freshCheck.clear();
 }
 function requestRender(){ const a=document.activeElement; if(a&&a.matches&&a.matches("select,input.who")) pending=true; else renderAll(); }
@@ -784,6 +821,9 @@ document.addEventListener("click",e=>{
       if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="sure?"; setTimeout(()=>{delete b.dataset.armed;b.textContent="×";},3000); return; }
       { const rowEl=b.closest(".row"); if(rowEl) rowEl.classList.add("out"); const c=b.dataset.c,id=b.dataset.id; setTimeout(()=>remove(c,id),rowEl?230:0); } break;
     case "pickStore":{ fStore=b.dataset.store; const f=$("#fStore"); if(f) f.value=fStore; renderShop(); break; }
+    case "newAnn": annEditing=true; renderAnnounce(); { const t=document.querySelector("#announce textarea"); if(t) t.focus(); } break;
+    case "clearAnn": annEditing=false; remove("plan","announce"); break;
+    case "outDay": remove("plan",b.dataset.id); break;
     case "enter": window.__closeHero&&window.__closeHero(); break;
     case "pickDay":{ const d=+b.dataset.day; selDay=(d===selDay||d<0)?-1:d; renderAll(); break; }
     case "toggleAdd":{
@@ -808,7 +848,7 @@ document.addEventListener("click",e=>{
 document.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&e.target.closest(".addrow")&&e.target.matches("input")) e.target.closest(".addrow").querySelector("button[data-act]").click();
   if(e.key==="Enter"&&e.target.matches("textarea.edit")){ e.preventDefault(); e.target.blur(); }
-  if(e.key==="Enter"&&e.target.matches("input.edit,.stay input,input.who")) e.target.blur();
+  if(e.key==="Enter"&&e.target.matches("input.edit,.stay input,input.who,input.cm-add")) e.target.blur();
   if(e.key==="Escape"){ const a=e.target.closest&&e.target.closest(".adder"); if(a){ a.classList.remove("open"); openAdd.delete(a.dataset.adder); e.target.blur(); } }
 });
 document.addEventListener("change",e=>{
@@ -816,6 +856,7 @@ document.addEventListener("change",e=>{
   if(t.id==="fStore"){ fStore=t.value; renderShop(); return; }
   if(t.id==="fWho"){ fWho=t.value; renderShop(); return; }
   if(t.id==="fState"){ fState=t.value; renderShop(); return; }
+  if(t.classList&&t.classList.contains("cm-add")){ const v=t.value; t.value=""; addIn(+t.dataset.day,v); return; }
   if(t.tagName==="SELECT"&&t.classList.contains("who")){
     if(t.value==="__other"){
       const inp=document.createElement("input"); inp.className="who"; inp.setAttribute("list","names"); inp.placeholder="type a name"; inp.style.width="11ch";
@@ -834,11 +875,13 @@ document.addEventListener("change",e=>{
     if(t.type==="checkbox"&&val) burst(t,10);
     const c=t.dataset.c, id=t.dataset.id;
     if(!D[c][id]&&t.dataset.kind==="stay") D[c][id]={kind:"stay",day:+t.dataset.day,place:""};
+    if(!D[c][id]&&t.dataset.kind==="announce") D[c][id]={kind:"announce",text:""};
     upsert(c,id,t.dataset.ownerset?{[t.dataset.f]:val,ownerSet:true}:{[t.dataset.f]:val});
   }
 });
 document.addEventListener("input",e=>{ if(e.target.id==="q"){ q=e.target.value.trim().toLowerCase(); renderShop(); } });
-document.addEventListener("focusout",()=>{ if(pending){ pending=false; setTimeout(()=>{ const a=document.activeElement; if(!a||!a.matches||!a.matches("select,input.who")) renderAll(); },150); } });
+document.addEventListener("focusout",e=>{ if(annEditing&&e.target.matches&&e.target.matches("#announce textarea")){ setTimeout(()=>{ if(!(D.plan.announce&&D.plan.announce.text)){ annEditing=false; renderAnnounce(); } },250); }
+   if(pending){ pending=false; setTimeout(()=>{ const a=document.activeElement; if(!a||!a.matches||!a.matches("select,input.who")) renderAll(); },150); } });
 document.addEventListener("input",e=>{ if(e.target.matches&&e.target.matches(".stay input")) fitStay(e.target); if(e.target.matches&&e.target.matches("textarea.edit")){ e.target.style.height="auto"; e.target.style.height=e.target.scrollHeight+"px"; } });
 window.addEventListener("resize",autosize); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(autosize);
 
