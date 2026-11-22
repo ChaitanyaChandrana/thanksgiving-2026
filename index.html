@@ -331,6 +331,11 @@ html,body{overflow-x:hidden}
 .ci-chip{border:0;font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;min-height:40px;border-radius:99px;background:color-mix(in srgb,var(--c,#d9531e) 14%,transparent);color:var(--ct,#7a2e0e);cursor:pointer}
 .ci-chip:active{transform:scale(.95)}
 .ci-none{margin:4px 0;color:var(--muted);font-size:14px}
+.grip{flex:none;width:24px;height:36px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);opacity:.5;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;font-size:15px;letter-spacing:-4px;margin-left:-6px}
+.grip:active{opacity:1}
+.row.dragging{position:relative;z-index:30;background:var(--card);box-shadow:0 12px 28px rgba(60,20,10,.28);border-radius:14px;transition:none!important;animation:none!important}
+.hrow .row.dragging{background:color-mix(in srgb,var(--c,#d9531e) 22%,var(--card))}
+body.is-dragging{user-select:none;-webkit-user-select:none}
 </style>
 </head>
 <body>
@@ -673,7 +678,7 @@ function renderSched(){
     const place=stay.place||"";
     const meals=[["Brunch","🥞 Brunch"],["Dinner","🍛 Dinner"]].map(([m,lab])=>{
       const its=dishes.filter(r=>r.day===di&&r.meal===m);
-      return its.length?`<div class="meal">${lab}</div>`+its.map(r=>`<div class="row${fresh.has(r.id)?" new":""}"><textarea class="edit" rows="1" data-c="plan" data-id="${r.id}" data-f="text">${esc(r.text)}</textarea><button class="del" data-act="del" data-c="plan" data-id="${r.id}" title="Remove">×</button></div>`).join(""):"";
+      return its.length?`<div class="meal">${lab}</div>`+its.map(r=>`<div class="row${fresh.has(r.id)?" new":""}"><span class="grip" data-c="plan" data-id="${r.id}" title="Drag to reorder">⋮⋮</span><textarea class="edit" rows="1" data-c="plan" data-id="${r.id}" data-f="text">${esc(r.text)}</textarea><button class="del" data-act="del" data-c="plan" data-id="${r.id}" title="Remove">×</button></div>`).join(""):"";
     }).join("");
     return `<div class="card dcard tint${di===todayIdx?" today":""}" style="--c:${DAYCOL[di]}">
       <button class="dclose" data-act="pickDay" data-day="-1" title="Close">×</button><h2 class="dayh"><span class="ico">${DAYEMOJI[di]}</span> ${esc(label)}${di===todayIdx?'<span class="tag">TODAY</span>':""}</h2>
@@ -697,7 +702,7 @@ function renderSched(){
 }
 function shopRow(r){
   return `<div class="row${fresh.has(r.id)?" new":""}${freshCheck.has(r.id)?" ck":""}">
-    <input type="checkbox" class="chk" id="c_${r.id}" data-c="items" data-id="${r.id}" data-f="done"${r.done?" checked":""} title="Bought?">
+    <span class="grip" data-c="items" data-id="${r.id}" title="Drag to reorder">⋮⋮</span><input type="checkbox" class="chk" id="c_${r.id}" data-c="items" data-id="${r.id}" data-f="done"${r.done?" checked":""} title="Bought?">
     <label class="txt ${r.done?"done":""}" for="c_${r.id}">${esc(r.text)}${r.qty?` <span class="muted">· ${esc(r.qty)}</span>`:""}</label>
     ${whoSel(`data-c="items" data-id="${r.id}" data-f="owner" data-ownerset="1"`,whoBuys(r),whoBuys(r)&&whoBuys(r)!==storeWho(r.store))}
     <button class="del" data-act="del" data-c="items" data-id="${r.id}" title="Remove">×</button>
@@ -743,11 +748,11 @@ function renderShop(){
 }
 function renderGames(){
   const gs=gameRows();
-  $("#gList").innerHTML=gs.map((g,i)=>`<div class="row${fresh.has(g.id)?" new":""}"><span class="dot" style="--c:${PAL[i%PAL.length]}">🎲</span><span class="gname">${esc(g.name)}</span><button class="del" data-act="del" data-c="games" data-id="${g.id}" title="Remove">×</button></div>`).join("")||'<div class="muted" style="padding:10px 0">No games yet. Add one!</div>';
+  $("#gList").innerHTML=gs.map((g,i)=>`<div class="row${fresh.has(g.id)?" new":""}"><span class="grip" data-c="games" data-id="${g.id}" title="Drag to reorder">⋮⋮</span><span class="dot" style="--c:${PAL[i%PAL.length]}">🎲</span><span class="gname">${esc(g.name)}</span><button class="del" data-act="del" data-c="games" data-id="${g.id}" title="Remove">×</button></div>`).join("")||'<div class="muted" style="padding:10px 0">No games yet. Add one!</div>';
 }
 function renderTopics(){
   const rs=topicRows();
-  $("#tList").innerHTML=rs.map((r,i)=>`<div class="row${fresh.has(r.id)?" new":""}"><span class="dot" style="--c:${PAL[i%PAL.length]}">💬</span><span class="txt">${esc(r.text)}</span><button class="del" data-act="del" data-c="items" data-id="${r.id}" title="Remove">×</button></div>`).join("")||'<div class="muted" style="padding:10px 0">No topics yet. Add one!</div>';
+  $("#tList").innerHTML=rs.map((r,i)=>`<div class="row${fresh.has(r.id)?" new":""}"><span class="grip" data-c="items" data-id="${r.id}" title="Drag to reorder">⋮⋮</span><span class="dot" style="--c:${PAL[i%PAL.length]}">💬</span><span class="txt">${esc(r.text)}</span><button class="del" data-act="del" data-c="items" data-id="${r.id}" title="Remove">×</button></div>`).join("")||'<div class="muted" style="padding:10px 0">No topics yet. Add one!</div>';
 }
 function uiKey(el){
   const ad=el.closest&&el.closest(".adder");
@@ -776,7 +781,7 @@ function renderAllInner(){
   [renderCount,renderAnnounce,renderStats,renderSched,renderShop,renderGames,renderTopics].forEach(f=>{ try{ f(); }catch(e){ console.error(f.name,e); } });
   fresh.clear(); freshCheck.clear();
 }
-function requestRender(){ const a=document.activeElement; if(a&&a.matches&&a.matches("select,input.who")) pending=true; else renderAll(); }
+function requestRender(){ if(dragging){ pending=true; return; } const a=document.activeElement; if(a&&a.matches&&a.matches("select,input.who")) pending=true; else renderAll(); }
 
 
 // ---------- welcome hero (the home page: shown whenever there is no #tab in the address) ----------
@@ -820,6 +825,7 @@ function showTab(t,fromHash){
   void sec.offsetWidth; sec.classList.add("enter"); setTimeout(()=>sec.classList.remove("enter"),900);
   if(!fromHash){ try{ location.hash=t; }catch(e){} }
   window.scrollTo(0,0);
+  autosize();
 }
 window.addEventListener("hashchange",()=>showTab(location.hash.slice(1),true));
 
@@ -897,6 +903,54 @@ document.addEventListener("input",e=>{ if(e.target.id==="q"){ q=e.target.value.t
 document.addEventListener("focusout",e=>{ if(annEditing&&e.target.matches&&e.target.matches("#announce textarea")){ setTimeout(()=>{ if(!(D.plan.announce&&D.plan.announce.text)){ annEditing=false; renderAnnounce(); } },250); }
    if(pending){ pending=false; setTimeout(()=>{ const a=document.activeElement; if(!a||!a.matches||!a.matches("select,input.who")) renderAll(); },150); } });
 document.addEventListener("input",e=>{ if(e.target.matches&&e.target.matches(".stay input")) fitStay(e.target); if(e.target.matches&&e.target.matches("textarea.edit")){ e.target.style.height="auto"; e.target.style.height=e.target.scrollHeight+"px"; } });
+
+// ---------- drag to reorder ----------
+let dragging=false;
+document.addEventListener("pointerdown",e=>{
+  const g=e.target.closest&&e.target.closest(".grip"); if(!g||(e.pointerType==="mouse"&&e.button!==0)) return;
+  const row=g.closest(".row"); if(!row) return;
+  e.preventDefault();
+  const horiz=row.parentElement.classList.contains("hrow");
+  const grab=row.getBoundingClientRect(), offX=e.clientX-grab.left, offY=e.clientY-grab.top;
+  const keyOf=el=>{ const x=el.querySelector(".grip"); return x?[x.dataset.c,x.dataset.id]:null; };
+  const sibs=()=>{ const a=[row]; let n=row.previousElementSibling; while(n&&n.classList.contains("row")){ a.unshift(n); n=n.previousElementSibling; } n=row.nextElementSibling; while(n&&n.classList.contains("row")){ a.push(n); n=n.nextElementSibling; } return a; };
+  const startOrder=sibs().map(keyOf).filter(Boolean);
+  if(startOrder.length<2) return;
+  dragging=true; document.body.classList.add("is-dragging"); row.classList.add("dragging");
+  let px=e.clientX, py=e.clientY, raf=0, moved=false;
+  const place=()=>{
+    const others=sibs().filter(el=>el!==row);
+    let before=null;
+    for(const el of others){ const r=el.getBoundingClientRect(); const mid=horiz?(r.left+r.width/2):(r.top+r.height/2); if((horiz?px:py)<mid){ before=el; break; } }
+    const last=others[others.length-1];
+    if(before){ if(row.nextElementSibling!==before){ before.parentElement.insertBefore(row,before); moved=true; } }
+    else if(last&&row.previousElementSibling!==last){ last.after(row); moved=true; }
+    row.style.transform="none";
+    const base=row.getBoundingClientRect();
+    row.style.transform=horiz?`translate(${px-offX-base.left}px,0)`:`translate(0,${py-offY-base.top}px)`;
+  };
+  const tick=()=>{
+    if(!dragging) return;
+    if(!horiz){ if(py<90) window.scrollBy(0,-10); else if(py>innerHeight-90) window.scrollBy(0,10); }
+    else { const sc=row.parentElement; if(px<50) sc.scrollLeft-=10; else if(px>innerWidth-50) sc.scrollLeft+=10; }
+    place(); raf=requestAnimationFrame(tick);
+  };
+  const onMove=ev=>{ px=ev.clientX; py=ev.clientY; };
+  const finish=ev=>{
+    document.removeEventListener("pointermove",onMove); document.removeEventListener("pointerup",finish); document.removeEventListener("pointercancel",finish);
+    cancelAnimationFrame(raf); dragging=false; document.body.classList.remove("is-dragging");
+    row.classList.remove("dragging"); row.style.transform="";
+    if(moved){
+      const newOrder=sibs().map(keyOf).filter(Boolean);
+      const ords=startOrder.map(([c,id])=>(D[c][id]&&D[c][id].ord)||0).sort((a,b)=>a-b);
+      let prev=-Infinity;
+      newOrder.forEach(([c,id],i)=>{ let o=ords[i]; if(o<=prev) o=prev+0.001; prev=o; if(D[c][id]&&D[c][id].ord!==o){ const n={...D[c][id],ord:o,at:Date.now()}; D[c][id]=n; persist(c,id,n); } });
+    }
+    pending=false; renderAll();
+  };
+  document.addEventListener("pointermove",onMove); document.addEventListener("pointerup",finish); document.addEventListener("pointercancel",finish);
+  raf=requestAnimationFrame(tick);
+});
 window.addEventListener("resize",autosize); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(autosize);
 
 // ---------- start ----------
