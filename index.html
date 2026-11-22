@@ -281,6 +281,29 @@ main section>:first-child{position:relative;z-index:2;margin-top:-40px!important
 .dlist .dcard .meal{font-size:11.5px}
 .dlist .dcard .stay,.dlist .dcard .stay input{font-size:13.5px}
 .dlist .dcard .dayh{font-size:16px}
+.dlist .dtile{padding:16px 16px!important;min-height:78px!important;grid-template-columns:72px 1fr 34px;margin-bottom:10px}
+.dlist .dtile .dt-num{font-size:34px!important}
+.dlist .dtile .dt-wk{font-size:12.5px}
+.dlist .dtile .dt-meta:nth-child(5){font-size:14.5px;margin-top:2px}
+.dlist .dtile .dt-ico{font-size:26px}
+.dlist .dcard{padding:14px 16px 16px}
+.dlist .dcard .row{padding-top:11px;padding-bottom:11px;min-height:48px}
+.dlist .dcard textarea.edit{font-size:15.5px;line-height:1.4}
+.dlist .dcard .meal{font-size:12px;margin-top:6px}
+.dlist .dcard .dayh{font-size:17px}
+.dlist .dcard .del{min-width:44px;min-height:44px}
+@media(max-width:360px){
+  main{padding-left:12px;padding-right:12px}
+  .dlist .dtile{grid-template-columns:60px 1fr 28px;padding:14px 12px!important}
+  .dlist .dtile .dt-num{font-size:30px!important}
+  .scene{height:clamp(180px,30vh,240px)}
+  header h1{font-size:18px}
+  header .count{font-size:12px}
+  .seg button{font-size:14px}
+}
+html,body{overflow-x:hidden}
+.dclose{width:40px;height:40px;top:10px;right:10px}
+.dlist .dcard button.add{min-height:44px}
 </style>
 </head>
 <body>
