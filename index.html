@@ -321,21 +321,27 @@ html,body{overflow-x:hidden}
 .cm-chip button{border:0;background:transparent;color:inherit;opacity:.6;font-size:16px;width:26px;height:26px;border-radius:50%;cursor:pointer;padding:0}
 .cm-add{flex:1 1 120px;min-width:110px;border:1.5px dashed color-mix(in srgb,var(--c,#d9531e) 45%,transparent);background:transparent;border-radius:99px;padding:7px 12px;font:inherit;font-size:14px}
 @media(prefers-color-scheme:dark){.announce{background:linear-gradient(135deg,#4a2a18,#3a2214);color:#ffe3c4}.announce.empty{background:rgba(42,31,23,.7);color:#ffb27a}}
-.ci-list{display:flex;flex-direction:column;gap:2px}
-.ci-row{display:flex;align-items:center;gap:8px;padding:6px 4px 6px 2px;border-bottom:1px solid var(--line);font-size:15px}
-.ci-n{font-weight:600;flex:1}
-.ci-t{color:var(--muted);font-size:13.5px;font-variant-numeric:tabular-nums}
-.ci-tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:color-mix(in srgb,#6b8e3d 22%,transparent);color:#4d6a26}
-.ci-tag.last{background:color-mix(in srgb,#d9531e 20%,transparent);color:#9a3d12}
-.ci-row button{border:0;background:transparent;color:var(--muted);font-size:17px;width:34px;height:34px;border-radius:50%;cursor:pointer}
-.ci-chip{border:0;font:inherit;font-size:14.5px;font-weight:600;padding:9px 14px;min-height:40px;border-radius:99px;background:color-mix(in srgb,var(--c,#d9531e) 14%,transparent);color:var(--ct,#7a2e0e);cursor:pointer}
-.ci-chip:active{transform:scale(.95)}
-.ci-none{margin:4px 0;color:var(--muted);font-size:14px}
 .grip{flex:none;width:24px;height:36px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);opacity:.5;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;font-size:15px;letter-spacing:-4px;margin-left:-6px}
 .grip:active{opacity:1}
 .row.dragging{position:relative;z-index:30;background:var(--card);box-shadow:0 12px 28px rgba(60,20,10,.28);border-radius:14px;transition:none!important;animation:none!important}
 .hrow .row.dragging{background:color-mix(in srgb,var(--c,#d9531e) 22%,var(--card))}
 body.is-dragging{user-select:none;-webkit-user-select:none}
+.coming{margin:14px 0 6px}
+.ci-head{display:flex;justify-content:space-between;align-items:baseline}
+.ci-head b{font-family:ui-serif,"New York",Georgia,serif;font-size:19px;color:var(--ct,#7a2e0e)}
+.ci-head span{font-size:13.5px;color:var(--muted);font-weight:600}
+.ci-sum{font-size:13px;color:var(--muted);margin:2px 0 10px}
+.ci-sum b{color:var(--ct,#7a2e0e);font-weight:600}
+.ci-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ci{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:46px;padding:8px 14px;border:1.5px solid color-mix(in srgb,var(--c,#d9531e) 22%,transparent);border-radius:14px;background:transparent;font:inherit;color:var(--ink);cursor:pointer;transition:background .2s,border-color .2s,transform .12s}
+.ci:active{transform:scale(.97)}
+.ci .ci-n{font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ci .ci-t{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ci.on{background:color-mix(in srgb,var(--c,#d9531e) 15%,var(--card));border-color:transparent}
+.ci.on .ci-t{color:var(--ct,#7a2e0e);font-weight:600}
+.ci.on .ci-t::before{content:"✓ ";font-weight:700}
+.cm-add{display:block;width:100%;margin-top:10px;border:0;border-bottom:1.5px solid var(--line);border-radius:0;background:transparent;padding:8px 2px;font:inherit;font-size:14.5px}
+.cm-add:focus{outline:none;border-bottom-color:var(--c,#d9531e)}
 </style>
 </head>
 <body>
@@ -683,11 +689,11 @@ function renderSched(){
     return `<div class="card dcard tint${di===todayIdx?" today":""}" style="--c:${DAYCOL[di]}">
       <button class="dclose" data-act="pickDay" data-day="-1" title="Close">×</button><h2 class="dayh"><span class="ico">${DAYEMOJI[di]}</span> ${esc(label)}${di===todayIdx?'<span class="tag">TODAY</span>':""}</h2>
       <div class="stay">🏠 Night stay at <input data-c="plan" data-id="stay${di}" data-f="place" data-kind="stay" data-day="${di}" value="${esc(place)}" placeholder="who?" style="width:${Math.max(5,Math.round(place.length*0.9)+1)}ch">'s place</div>
-      <div class="coming">${(()=>{ const here=inRows(di), names=new Set(here.map(r=>r.name)), wait=NAMES.filter(n=>!names.has(n)), tm=t=>new Date(t).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
-        return `<div class="cm-h">✅ Checked in<b>${here.length}</b></div>`
-          +(here.length?`<div class="ci-list">${here.map((r,i)=>`<div class="ci-row"><span class="ci-n">${esc(r.name)}</span><span class="ci-t">${tm(r.at)}</span>${here.length>1&&i===0?'<span class="ci-tag">first</span>':""}${here.length>1&&i===here.length-1?'<span class="ci-tag last">last</span>':""}<button data-act="outDay" data-id="${r.id}" title="Undo">×</button></div>`).join("")}</div>`:'<p class="ci-none">Nobody yet. Tap your name below when you arrive.</p>')
-          +(wait.length?`<div class="cm-h" style="margin-top:12px">⏳ Not here yet</div><div class="cm-chips">${wait.map(n=>`<button class="ci-chip" data-act="checkIn" data-day="${di}" data-name="${esc(n)}">${esc(n)}</button>`).join("")}</div>`:'<p class="ci-none">🎉 Everyone is here!</p>')
-          +`<div class="cm-chips" style="margin-top:8px"><input class="cm-add" list="names" data-day="${di}" placeholder="＋ someone else" enterkeyhint="done" autocomplete="off"></div>`; })()}</div>
+      <div class="coming">${(()=>{ const here=inRows(di), by=new Map(here.map(r=>[r.name,r])), all=[...NAMES,...here.map(r=>r.name).filter(n=>!NAMES.includes(n))], tm=t=>new Date(t).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}), nm=here.length;
+        return `<div class="ci-head"><b>Check-in</b><span>${nm} of ${all.length} here</span></div>`
+          +(nm>1?`<div class="ci-sum">First <b>${esc(here[0].name)}</b> · Latest <b>${esc(here[nm-1].name)}</b></div>`:'<div class="ci-sum">Tap your name when you arrive</div>')
+          +`<div class="ci-grid">${all.map(n=>{ const r=by.get(n); return r?`<button class="ci on" data-act="toggleIn" data-day="${di}" data-name="${esc(n)}" data-id="${r.id}"><span class="ci-n">${esc(n)}</span><span class="ci-t">${tm(r.at)}</span></button>`:`<button class="ci" data-act="toggleIn" data-day="${di}" data-name="${esc(n)}"><span class="ci-n">${esc(n)}</span><span class="ci-t"></span></button>`; }).join("")}</div>`
+          +`<input class="cm-add" list="names" data-day="${di}" placeholder="Someone else…" enterkeyhint="done" autocomplete="off">`; })()}</div>
       ${meals||""}
       <div class="adder${openAdd.has("day"+di)?" open":""}" data-adder="day${di}">
         <button class="plus" data-act="toggleAdd"><span class="pi">＋</span> Add a dish or plan</button>
@@ -842,7 +848,7 @@ document.addEventListener("click",e=>{
     case "pickStore":{ fStore=b.dataset.store; const f=$("#fStore"); if(f) f.value=fStore; renderShop(); break; }
     case "newAnn": annEditing=true; renderAnnounce(); { const t=document.querySelector("#announce textarea"); if(t) t.focus(); } break;
     case "clearAnn": annEditing=false; remove("plan","announce"); break;
-    case "checkIn": addIn(+b.dataset.day,b.dataset.name); break;
+    case "toggleIn":{ if(b.dataset.id){ if(!b.dataset.armed){ b.dataset.armed="1"; const t=b.querySelector(".ci-t"), old=t.textContent; t.textContent="undo?"; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.armed; t.textContent=old; } },2500); } else remove("plan",b.dataset.id); } else addIn(+b.dataset.day,b.dataset.name); break; }
     case "outDay": remove("plan",b.dataset.id); break;
     case "enter": window.__closeHero&&window.__closeHero(); break;
     case "pickDay":{ const d=+b.dataset.day; selDay=(d===selDay||d<0)?-1:d; renderAll(); break; }
