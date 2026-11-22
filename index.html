@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Thanksgiving 2026</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A6%83%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#f2f2f7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script>
+/* The page asks for a shared database through window.claude.use("db"). Here that is Firebase. */
+window.__dbReady=new Promise(function(r){ window.__resolveDb=r; });
+if(!window.claude) window.claude={ use:function(n){ return n==="db"?window.__dbReady:Promise.resolve(null); } };
+setTimeout(function(){ window.__resolveDb(null); },10000);
+</script>
+<script src="firebase-config.js"></script>
+<script type="module">
+(async()=>{
+  const cfg=window.FIREBASE_CONFIG, done=v=>window.__resolveDb(v);
+  const status=s=>{ window.__liveState=s; if(window.__setLive) window.__setLive(s); };
+  if(!cfg||!cfg.databaseURL||String(cfg.databaseURL).includes("YOUR_")){ done(null); return; }
+  try{
+    const V="10.14.1";
+    const [{initializeApp},{getDatabase,ref,onValue,set,remove}]=await Promise.all([
+      import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`),
+      import(`https://www.gstatic.com/firebasejs/${V}/firebase-database.js`)]);
+    const rtdb=getDatabase(initializeApp(cfg)), base="tg2026";
+    onValue(ref(rtdb,".info/connected"),s=>status(s.val()===true?"live":"offline"));
+    done({
+      collection:c=>({onSnapshot:cb=>onValue(ref(rtdb,base+"/"+c),snap=>{
+        const v=snap.val()||{}; cb({docs:Object.entries(v).map(([id,d])=>({id,data:()=>d}))}); })}),
+      doc:p=>{ const [c,id]=p.split("/"), r=ref(rtdb,base+"/"+c+"/"+id);
+        return { set:v=>set(r,JSON.parse(JSON.stringify(v))), delete:()=>remove(r) }; }
+    });
+  }catch(e){ console.error("Firebase failed to load",e); done(null); }
+})();
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;--bg:#f2f2f7;--card:#fff;--ink:#000;--muted:#8e8e93;--line:rgba(60,60,67,.16);--accent:#007aff;--green:#34c759;--red:#ff3b30;--fill:#f2f2f7;--seg:rgba(118,118,128,.12);--segon:#fff;--chip:#e5f0ff;--chiptxt:#0a62d0;--shadow:0 1px 2px rgba(0,0,0,.06)}
+@media(prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--ink:#fff;--muted:#98989f;--line:rgba(84,84,88,.55);--fill:#2c2c2e;--seg:rgba(118,118,128,.24);--segon:#636366;--chip:#12304f;--chiptxt:#6cb0ff;--shadow:none}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Inter","Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:17px;line-height:1.35;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+header{max-width:760px;margin:0 auto;padding:max(28px,env(safe-area-inset-top)) 20px 12px}
+h1{font-size:34px;font-weight:700;letter-spacing:-.022em;margin:0}
+.count{margin-top:2px;font-size:17px;color:var(--muted);font-weight:500}
+.prog{margin-top:16px}
+.prog .lbl{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;font-weight:500}
+.prog .lbl b{color:var(--ink);font-weight:600}
+.bar{height:6px;background:var(--seg);border-radius:3px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--green);border-radius:3px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+nav{position:sticky;top:0;z-index:5;padding:8px 16px 10px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
+.seg{position:relative;max-width:728px;margin:0 auto;display:flex;background:var(--seg);border-radius:9px;padding:2px}
+.thumb{position:absolute;top:2px;bottom:2px;left:2px;width:calc((100% - 4px)/4);background:var(--segon);border-radius:7px;box-shadow:0 3px 8px rgba(0,0,0,.12),0 3px 1px rgba(0,0,0,.04);transform:translateX(calc(var(--idx,0)*100%));transition:transform .4s cubic-bezier(.3,1.3,.5,1)}
+nav button{position:relative;z-index:1;flex:1 1 0;min-width:0;border:0;background:transparent;padding:7px 4px;border-radius:7px;cursor:pointer;font:inherit;font-size:14px;font-weight:500;color:var(--ink);white-space:nowrap;transition:background .2s,box-shadow .2s}
+nav button:active{transform:scale(.95)}
+nav button.on{font-weight:600}
+nav small{font-size:12px;font-weight:500;color:var(--muted);margin-left:4px}
+main{max-width:760px;margin:0 auto;padding:8px 16px 70px}
+.card{background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:18px;box-shadow:var(--shadow)}
+.card.today{box-shadow:0 0 0 2px var(--accent)}
+.dayh{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:22px;font-weight:700;letter-spacing:-.015em}
+.dayh .tag{font-size:11px;font-weight:700;background:var(--accent);color:#fff;border-radius:6px;padding:2px 7px;letter-spacing:.04em}
+.meal{margin-top:12px;font-size:13px;text-transform:uppercase;letter-spacing:.02em;color:var(--muted);font-weight:600}
+.row{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.txt{flex:1;min-width:0}
+.txt.done{color:var(--muted);text-decoration:line-through}
+input,select{font:inherit;font-size:16px;padding:9px 12px;border:0;border-radius:10px;background:var(--fill);color:var(--ink);min-width:0;-webkit-appearance:none;appearance:none}
+select{padding-right:26px;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+input::placeholder{color:var(--muted)}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+input.edit{flex:1;background:transparent;padding:4px 6px;margin-left:-6px}
+input.edit:hover{background:var(--fill)}
+input.edit:focus{background:var(--fill)}
+.stay{display:inline-flex;align-items:center;gap:3px;margin:0 0 2px;padding:4px 12px;border-radius:99px;background:var(--chip);color:var(--chiptxt);font-weight:500;font-size:15px;flex-wrap:wrap}
+.stay input{background:transparent;border-radius:0;border-bottom:1.5px solid currentColor;padding:0 2px;font-weight:600;color:inherit;text-align:center;font-size:15px;opacity:.95}
+.stay input::placeholder{color:inherit;opacity:.5;font-weight:400}
+.stay input:focus{outline:none;background:transparent}
+.addrow{display:flex;gap:8px;flex-wrap:wrap;padding:8px 0 4px}
+.plus{background:none;border:0;color:var(--accent);font:inherit;font-size:16px;font-weight:500;padding:10px 0 2px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;transition:opacity .15s}
+.plus:active{opacity:.5}
+.pi{display:inline-block;font-weight:600;transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
+.adder.open .pi{transform:rotate(135deg)}
+.addwrap{display:grid;grid-template-rows:0fr;opacity:0;visibility:hidden;transition:grid-template-rows .4s cubic-bezier(.2,.8,.2,1),opacity .3s,visibility 0s .4s}
+.adder.open .addwrap{grid-template-rows:1fr;opacity:1;visibility:visible;transition-delay:0s}
+.addinner{overflow:hidden;min-height:0}
+.row.new{animation:rowIn .6s cubic-bezier(.2,.8,.2,1)}
+@keyframes rowIn{0%{opacity:0;transform:translateY(-10px) scale(.98);background:color-mix(in srgb,var(--accent) 18%,transparent)}50%{opacity:1}100%{transform:none;background:transparent}}
+.row.out{animation:rowOut .24s ease-in forwards;overflow:hidden}
+@keyframes rowOut{to{opacity:0;transform:translateX(-28px);max-height:0;padding-top:0;padding-bottom:0}}
+.row.ck .chk{animation:chkPop .5s cubic-bezier(.3,1.7,.5,1)}
+@keyframes chkPop{0%{transform:scale(.55)}100%{transform:scale(1)}}
+.enter .card,.enter .store-h,.enter .mini{animation:up .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0s)}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.result.land{animation:land .55s cubic-bezier(.3,1.6,.5,1)}
+@keyframes land{0%{transform:scale(.6);opacity:.2}100%{transform:none;opacity:1}}
+.addrow input[data-new=text]{flex:1 1 150px}
+.addrow input.qty{width:84px}
+.chk{transition:transform .2s,background .2s,border-color .2s}
+button.add{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:9px 18px;cursor:pointer;font:inherit;font-size:16px;font-weight:600;transition:opacity .15s,transform .15s}
+button.add:active{opacity:.7;transform:scale(.97)}
+.del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:20px;padding:0 8px;border-radius:8px;line-height:1;opacity:.7}
+.del:hover{color:var(--red);opacity:1}
+.del[data-armed]{color:#fff;background:var(--red);font-size:13px;font-weight:600;padding:3px 9px;opacity:1}
+.store-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:22px;font-weight:700;letter-spacing:-.015em;margin:22px 4px 6px}
+.store-h span{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0}
+.mini{height:4px;background:var(--seg);border-radius:2px;margin:0 4px 8px;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--green);border-radius:2px;transition:width .4s}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters input{flex:1 1 150px}
+.chk{appearance:none;-webkit-appearance:none;width:24px;height:24px;border:1.5px solid #c7c7cc;border-radius:50%;cursor:pointer;flex:0 0 auto;display:grid;place-items:center;transition:all .2s;padding:0;background:transparent}
+.chk:checked{background:var(--accent);border-color:var(--accent)}
+.chk:checked:after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.2px 2.2px 0;transform:translateY(-1px) rotate(45deg)}
+.pill{font-size:12px;padding:2px 8px;border-radius:99px;background:var(--chip);color:var(--chiptxt);font-weight:600;white-space:nowrap}
+.muted{color:var(--muted);font-size:15px}
+.picker{text-align:center}
+.picker button.big{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:13px 24px;font:inherit;font-size:17px;font-weight:600;cursor:pointer;transition:opacity .15s,transform .15s}
+.picker button.big:active{opacity:.7;transform:scale(.97)}
+.result{min-height:34px;margin-top:12px;font-size:26px;font-weight:700;letter-spacing:-.02em}
+.result.spinning{color:var(--muted)}
+.gname{flex:1;font-weight:500}
+.notice{background:var(--chip);color:var(--chiptxt);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:14px}
+.hide{display:none!important}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+#fx span{position:absolute;font-size:22px;animation:fly 1.1s ease-out forwards}
+@keyframes fly{0%{transform:translate(0,0) scale(.4);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(1.1);opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---- color layer ---- */
+header{max-width:none;padding:max(28px,env(safe-area-inset-top)) max(20px,calc((100% - 760px)/2 + 20px)) 16px;background:radial-gradient(120% 150% at 0% 0%,rgba(255,159,10,.38),transparent 55%),radial-gradient(100% 130% at 100% 0%,rgba(255,55,95,.28),transparent 55%),radial-gradient(90% 120% at 55% 130%,rgba(191,90,242,.26),transparent 60%)}
+h1{display:inline-block;background:linear-gradient(90deg,#ff9500,#ff2d55 55%,#af52de);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.count{display:inline-block;margin-top:6px;background:rgba(255,149,0,.18);color:#b25f00;padding:4px 13px;border-radius:99px;font-size:15px;font-weight:600}
+.bar i{background:linear-gradient(90deg,#34c759,#a8e063)}
+.thumb{background:var(--tabc,#ff9500);box-shadow:0 4px 12px color-mix(in srgb,var(--tabc,#ff9500) 45%,transparent);transition:transform .4s cubic-bezier(.3,1.3,.5,1),background .3s,box-shadow .3s}
+nav button{transition:color .25s,transform .15s}
+nav button.on{color:#fff}
+nav button.on small{color:rgba(255,255,255,.85)}
+.tint{--ct:color-mix(in srgb,var(--c) 62%,#000)}
+.dcard{background:linear-gradient(180deg,color-mix(in srgb,var(--c) 12%,var(--card)),var(--card) 120px)}
+.dcard.today{box-shadow:0 0 0 2px var(--c)}
+.dayh{color:var(--ct)}
+.dayh .tag{background:var(--c)}
+.ico{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;font-size:20px;background:color-mix(in srgb,var(--c) 22%,transparent)}
+.ico.sm{width:30px;height:30px;font-size:17px;border-radius:9px}
+.store-h b{display:flex;align-items:center;gap:10px;color:var(--ct)}
+.stay{background:color-mix(in srgb,var(--c) 17%,transparent);color:var(--ct)}
+.meal{color:var(--ct)}
+.mini i{background:var(--c)}
+.store .chk:checked{background:var(--c);border-color:var(--c)}
+.store .pill{background:color-mix(in srgb,var(--c) 17%,transparent);color:var(--ct)}
+.dcard .plus{color:var(--ct)}
+.dcard button.add{background:var(--c)}
+.dcard input:focus,.dcard select:focus{outline-color:var(--c)}
+.dot{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;font-size:18px;flex:0 0 auto;background:color-mix(in srgb,var(--c) 22%,transparent)}
+.picker button.big{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 50%,#ff2d55));box-shadow:0 8px 20px color-mix(in srgb,var(--accent) 40%,transparent)}
+.result{color:var(--accent)}
+@media(prefers-color-scheme:dark){.count{background:rgba(255,159,10,.22);color:#ffb340}.tint{--ct:color-mix(in srgb,var(--c) 70%,#fff)}}
+.who{width:auto;background:transparent;border:0;border-bottom:1.5px dashed var(--line);border-radius:0;padding:1px 3px;font-size:13px;font-weight:600;color:var(--ct,var(--accent));text-align:center;flex:0 0 auto}
+.who::placeholder{color:var(--muted);font-weight:500;opacity:.8}
+.who.has{background:color-mix(in srgb,var(--c,var(--accent)) 17%,transparent);border-bottom:0;border-radius:99px;padding:3px 11px}
+select.who{background-image:none;padding-right:3px;cursor:pointer;text-align:center;text-align-last:center;font-family:inherit;-webkit-appearance:none;appearance:none;color:var(--muted)}
+select.who.has{color:var(--ct,var(--accent))}
+.who:focus{outline:none;background:var(--fill);border-radius:8px}
+.buyer{display:flex;align-items:center;gap:8px;margin:0 4px 8px;font-size:13px;color:var(--muted)}
+.buyer .who{font-size:14px}
+.addrow input.whoin{flex:1 1 130px;max-width:190px}
+.store .plus{color:var(--ct)}
+.store button.add{background:var(--c)}
+.store input:focus,.store select:focus{outline-color:var(--c)}
+/* ---- phone polish ---- */
+nav button{padding:8px 2px;overflow:hidden;text-overflow:ellipsis}
+.filters input{flex:1 1 100%}
+.filters select{flex:1 1 120px}
+.del{min-width:40px;min-height:40px;display:inline-grid;place-items:center;margin:-8px -10px -8px 0}
+.del[data-armed]{min-width:56px}
+.plus{min-height:44px;padding:8px 0 0}
+label.txt{cursor:pointer}
+textarea.edit{flex:1;min-width:0;resize:none;overflow:hidden;font:inherit;font-size:17px;line-height:1.3;color:var(--ink);background:transparent;border:0;border-radius:8px;padding:5px 6px;margin-left:-6px;display:block}
+textarea.edit:hover,textarea.edit:focus{background:var(--fill);outline:none}
+select.who{background:transparent;color:var(--muted);font-weight:500;padding:6px 4px;min-height:32px;border:0}
+select.who.has{border:0}
+select.who.has{font-weight:600;padding:6px 11px}
+.stay input{padding:0 1px}
+.live{margin-left:8px;font-size:13px;font-weight:600;color:var(--muted)}
+.live.on{color:var(--green)}
+.foot{max-width:760px;margin:0 auto;padding:0 16px 44px;text-align:center;color:var(--muted);font-size:14px}
+.linkbtn{background:none;border:0;color:var(--accent);font:inherit;cursor:pointer;padding:10px 8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Thanksgiving</h1>
+  <div class="count" id="count">2026</div><span class="live" id="live"></span>
+  <div class="prog"><div class="lbl"><span>Shopping</span><b id="stShop">0 / 0</b></div><div class="bar"><i id="brShop"></i></div></div>
+</header>
+<nav><div class="seg" id="tabs"><i class="thumb"></i>
+  <button data-tab="schedule" class="on">Schedule</button>
+  <button data-tab="shopping">Shopping</button>
+  <button data-tab="games">Games</button>
+  <button data-tab="topics">Topics</button>
+</div></nav>
+<main>
+  <div id="notice" class="notice hide"></div>
+
+  <section id="v-schedule"></section>
+
+  <section id="v-shopping" class="hide">
+    <div class="card">
+      <div class="filters">
+        <input id="q" type="search" placeholder="🔍 Search the list">
+        <select id="fStore"><option value="all">All stores</option></select>
+        <select id="fState"><option value="all">Everything</option><option value="todo">To buy</option><option value="done">Bought</option></select>
+      </div>
+      <div class="adder" data-adder="shop">
+        <button class="plus" data-act="toggleAdd"><span class="pi">＋</span> Add an item</button>
+        <div class="addwrap"><div class="addinner"><div class="addrow">
+          <input type="text" data-new="text" placeholder="Item">
+          <select data-new="store" id="addStore"></select>
+          <input class="qty" data-new="qty" placeholder="Qty">
+          <input class="whoin" data-new="who" list="names" placeholder="Who's doing it?">
+          <button class="add" data-act="addP">Add</button>
+        </div></div></div>
+      </div>
+    </div>
+    <div id="shopList"></div>
+  </section>
+
+  <section id="v-games" class="hide">
+    <div class="card picker">
+      <button class="big" data-act="spinG">🎲 Pick a game for us</button>
+      <div class="result" id="gResult"></div>
+    </div>
+    <div class="card">
+      <div id="gList"></div>
+      <div class="adder" data-adder="games">
+        <button class="plus" data-act="toggleAdd"><span class="pi">＋</span> Add a game</button>
+        <div class="addwrap"><div class="addinner"><div class="addrow">
+          <input type="text" data-new="text" placeholder="Game name">
+          <button class="add" data-act="addG">Add</button>
+        </div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="v-topics" class="hide">
+    <div class="card picker">
+      <button class="big" data-act="spinT">💬 Surprise me</button>
+      <div class="result" id="tResult"></div>
+    </div>
+    <div class="card">
+      <div id="tList"></div>
+      <div class="adder" data-adder="topics">
+        <button class="plus" data-act="toggleAdd"><span class="pi">＋</span> Add a topic</button>
+        <div class="addwrap"><div class="addinner"><div class="addrow">
+          <input type="text" data-new="text" placeholder="Topic">
+          <button class="add" data-act="addT">Add</button>
+        </div></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="foot"><button class="linkbtn" data-act="copyList">Copy shopping list</button> · <button class="linkbtn" data-act="backup">Download backup</button></footer>
+<datalist id="names"></datalist>
+<div id="fx"></div>
+
+<script>
+const NAMES=["Chaitu","Rakesh","Madhu","Gopi","Prashanth/Rakesh","Anjan/Priya","Swetha","Priya","Malkannola","Chandrana","Ayitha","Gireddy"];
+const DAYS=["Wed 25 Nov","Thu 26 Nov · Thanksgiving","Fri 27 Nov","Sat 28 Nov","Sun 29 Nov"];
+const CATS=[["Brunch","Brunch"],["Dinner","Dinner"]];
+const STATUS=[["open","Open"],["claimed","Claimed"],["done","Ready ✓"]];
+const GSTATUS=[["idea","Idea"],["want","Want to play"],["played","Played"]];
+const STORES=["Costco","Kroger / Meijer","Patel","Indian store","Halal","Other"];
+
+// [day, category, text] — from the "2026 _II" tab (Games and Topics live in their own tabs)
+const SCHED=[
+[0,"Kids","Soup and garlic bread"],[0,"Topics","Will / Trust"],[0,"Stay","Malkannola"],[0,"Games","Mafia"],[0,"Dinner","Curry Pizza House, curd"],[0,"Topics","Term insurance"],
+[1,"Games","Slip it in"],[1,"Appetizer","1/4 chicken 65"],[1,"Dinner","At-home salad"],[1,"Kids","Whole chicken (home)"],[1,"Topics","Things that could help others"],[1,"Stay","Chandrana"],
+[1,"Brunch","Idli varieties, coconut & peanut chutney, sambhar"],[1,"Games","Imposter"],[1,"Appetizer","Onion pakoda"],[1,"Dinner","Family packs: paneer, chef's biryani"],[1,"Kids","Badusha (100)"],
+[1,"Games","Wits n Wagers"],[1,"Appetizer","1/4 gobi manchurian"],[1,"Dinner","Paneer biryani family pack"],[1,"Kids","Fruit, turkey, curd"],
+[2,"Brunch","T bath, bagels, cream cheese"],[2,"Games","Codenames"],[2,"Appetizer","Dhokla"],[2,"Dinner","Jeera chawal, dal tadka, Varanasi puri, kala chana, bhendi, achar, paneer thecha, boondi raita"],
+[2,"Kids","Masala chaas"],[2,"Topics","Discussion"],[2,"Stay","Ayitha"],[2,"Games","Priya insta game"],[2,"Dinner","Halwa"],[2,"Topics","Travel"],
+[3,"Brunch","Pongal"],[3,"Games","Tarot cards"],[3,"Appetizer","Naan bites"],[3,"Dinner","Cranberry pulihora, ginger rice, pepper rice, chicken curry, veg manchurian (order from outside)"],
+[3,"Kids","Brownie & ice cream"],[3,"Stay","Gireddy"],
+[4,"Brunch","Waffles & pancakes, pesarattu, coconut chutney"],[4,"Games","Newly wed"],[4,"Games","3 Monkeys"],[4,"Games","Dolphin Trainer"],[4,"Games","Exploding Kittens"]
+];
+
+// [text, store, owner, qty]
+const SHOP=[
+["Pomegranate","Costco","","6"],["Tortilla chips","Costco","","1"],["Croissants","Costco","","4"],["Eggs","Costco","","60 pk"],["Tortilla sheets","Costco","","36 ct"],
+["Hawaiian bread (sweet)","Costco","","2"],["Tomatoes","Costco","","2"],["Mozzarella","Costco","","1 pk"],["Lemons","Costco","",""],["Whole milk","Costco","","4"],
+["Pani poori","Costco","","3"],["Sunbeam bread","Costco","","2"],["Frozen corn","Costco","","1 pk"],["Plates","Costco","","1 pk"],["Paneer","Costco","Gopi","2 blocks"],
+["Chicken drumsticks","Costco","",""],["Tilapia (foot long)","Costco","","2"],
+["Apples, grapes, brown pear, strawberries, chocolate chips","Meijer","",""],["Mixed nuts (for ice cream)","Meijer","","1 pk"],["Ritz biscuits","Meijer","",""],
+["String cheese","Meijer","",""],["Sparkling water","Meijer","",""],["Red Jello","Meijer","","2 pk"],["Water","Meijer","","3"],["Hawaiian bread (plain)","Meijer","","4"],
+["All-purpose flour","Meijer","","2 lb"],["Pizza sauce","Meijer","",""],["Olives","Meijer","",""],["Texas toast","Meijer","","4"],["Four cheese mix","Meijer","","1 pk"],
+["Frozen cookie dough","Meijer","","2 pk"],["Tomato puri","Meijer","","1 small"],["Sour cream","Meijer","","1 small"],["Cream cheese","Meijer","","1 block"],
+["Minapappu","Patel","","4 lb"],["Peanuts","Patel","","4 lb"],["Tilda basmati rice","Patel","","5 lb"],["Rooh Afza","Patel","",""],["Basil seeds","Patel","","50 g"],
+["Red Box ice cream (pista, vanilla, rose)","Patel","","3"],["Tutti frutti","Patel","",""],["Wafers","Patel","","2 pk"],["Upma rava","Patel","","4 lb"],
+["Yeast","Patel","Swetha","check first"],["Green & red peppers","Patel","",""],["Onion","Patel","","10 lb"],["Sev (for dhabeli)","Patel","","1 big pk"],["Dhabeli masala","Patel","","1 pk"],
+["Amchur powder","Patel","","1 pk"],["Potatoes","Patel","","10 lb"],["Ginger garlic paste","Patel","","1 bottle"],["Sweet chutney","Patel","",""],["Methi leaves","Patel","","1 bunch"],
+["Boiled rice","Patel","","4 lb"],["Carrots","Patel","","5 lb"],["Beans","Patel","","2 lb"],["Green peas","Patel","","2 pk"],["Shredded coconut","Patel","","1 pk"],
+["Green chillies","Patel","","2 lb"],["Cilantro","Patel","","8"],["Mint","Patel","","6"],["Ginger (raw)","Patel","","1 lb"],["Chole masala","Patel","","1"],
+["Pav bhaji masala","Patel","","1"],["Chole","Patel","","2 lb"],["Kesar","Patel","","2"],["Aashirvaad atta","Patel","","4 lb minimum"],["Vatana","Patel","","2 lb"],
+["Poori flour","Patel","Gopi","7.5 lb"],["Chole (for Gopi's dish)","Patel","Gopi","1.5 lb"],["Sooji (for pesarattu)","Patel","Gopi","2 lb"],
+["Green moong (for pesarattu)","Patel","Gopi","6.5 cups (180 ml)"],["Rice for biryani","Patel","Gopi","19 cups? (confirm)"],
+["Mutton","Indian store","","3 lb"],["Chicken for Gopi","Halal","Gopi","3 lb"],["Chicken: 1 whole + 1 lb thighs (marination)","Halal","Madhu","1 whole + 1 lb"],
+["Chicken, cut whole","Halal","Chaitu",""],["Chicken, whole","Halal","Chaitu",""],
+["Biryani: 15–17 cups","Other","Gopi",""],["Biryani: 6 cups non-veg (10 ppl) + 9 cups veg (14 ppl), incl. white rice","Other","Prashanth/Rakesh",""],
+["Amazon order","Other","Anjan/Priya",""],["Chocolate fountain","Other","Anjan/Priya",""],["Panipuri fountain","Other","Anjan/Priya",""],["Decide on ingredients","Other","Anjan/Priya",""],
+["Spoons","Costco","Chaitu",""],["Bowls","Costco","Chaitu",""],["Milk","Costco","Chaitu","8"],["Tea cups","Costco","Chaitu",""],["Apples","Costco","Chaitu","3"],
+["Grapes","Costco","Chaitu","3"],["Bananas","Costco","Chaitu","12"],["Oranges","Costco","Chaitu",""],["Cuties","Costco","Chaitu",""],["Nanak paneer","Costco","Chaitu","2"],
+["Yellow onions","Costco","Chaitu","2"],["Red onions","Costco","Chaitu","2"],["Blueberries","Costco","Chaitu",""],["Naan bites","Costco","Chaitu","2"],
+["Mexican mixed cheese","Costco","Chaitu",""],["Pomegranate 4-pack","Costco","Chaitu","4"],["Cranberries","Costco","Chaitu","2"],["Bisquick","Costco","Chaitu",""],
+["Sprite","Costco","Chaitu",""],["Thumbs Up","Costco","Chaitu",""],
+["5-gal water","Kroger","Rakesh","4"],["Texas toast (NY Company)","Kroger","Rakesh","4"],["Whipped cream","Kroger","Rakesh","6"],["Skewers","Kroger","Rakesh",""],
+["Edible eyes","Kroger","Rakesh",""],["Ghirardelli chocolate melts","Kroger","Rakesh",""],["Cheese cubes","Kroger","Rakesh","1 pk"],["Green onions","Kroger","Rakesh","1"],
+["Ghirardelli double chocolate brownie mix","Kroger","Rakesh","2"],["Purple Cow vanilla","Kroger","Rakesh","1"],["Maple syrup","Kroger","Rakesh",""],["Strawberries","Kroger","Rakesh","2"],
+["Mint (Kroger list)","Kroger","Rakesh","4"],
+["Knorr tomato soup","Indian store","Madhu","5"],["Janaki boondi","Indian store","Madhu",""],["Frozen onions (mini)","Indian store","Madhu","1"],["Frozen mullakai","Indian store","Madhu","1"],
+["Sooji","Indian store","Madhu","4 lb"],["Chillies","Indian store","Madhu","2 lb"],["North Indian achar","Indian store","Madhu",""],["Bhendi","Indian store","Madhu","4 lb"],
+["Peeled garlic (small box)","Indian store","Madhu",""],["Yellow moong dal","Indian store","Madhu","2 lb"],["Yellow pumpkin (1/4)","Indian store","Madhu",""],
+["Curry leaves","Indian store","Madhu","3"],["Ginger (Indian list)","Indian store","Madhu","2 lb"],["Green moong dal","Indian store","Madhu","4 lb"],
+["Aashirvaad atta","Indian store","Madhu","5 lb"],["Hot snacks (4 varieties)","Indian store","Madhu",""],["Channa dal","Indian store","Madhu","2 lb"],
+["Bellam (jaggery)","Indian store","Madhu","2 packs"],["Cilantro (Indian list)","Indian store","Madhu","10"],["Sona Masoori rice","Indian store","Madhu",""]
+];
+const GSEED=["Mafia","Slip it in","Imposter","Wits n Wagers","Codenames","Priya insta game","Tarot cards","Newly wed","3 Monkeys","Dolphin Trainer","Exploding Kittens"];
+
+// ---------- state ----------
+const TABS=["schedule","shopping","games","topics"];
+const DAYEMOJI=["🧳","🦃","🛍️","🎉","👋"];
+const STOREEMOJI={"Kroger / Meijer":"🛍️","Costco":"🏬","Meijer":"🛍️","Patel":"🌶️","Indian store":"🥘","Kroger":"🥕","Halal":"🍗","Other":"📦"};
+const DAYCOL=["#5e5ce6","#ff9500","#ff2d55","#af52de","#30b0c7"];
+const STORECOL={"Kroger / Meijer":"#ff3b30","Costco":"#0a84ff","Meijer":"#ff3b30","Patel":"#ff9500","Indian store":"#af52de","Kroger":"#34c759","Halal":"#14b8a6","Other":"#8e8e93"};
+const STOREWHO={"Kroger / Meijer":"Rakesh","Costco":"Chaitu","Kroger":"Rakesh","Indian store":"Madhu"};
+const whoKey=st=>"who_"+String(st).replace(/[^A-Za-z0-9]+/g,"_");
+const storeWho=st=>{ const d=D.plan[whoKey(st)]; return d?(d.name||""):(STOREWHO[st]||""); };
+const whoBuys=r=>r.ownerSet?(r.owner||""):(r.owner||storeWho(r.store));
+function whoSel(attrs,v,custom){
+  v=v||""; const opts=[...NAMES]; if(v&&!opts.includes(v)) opts.push(v);
+  return `<select class="who${custom?" has":""}" ${attrs} style="width:${wch(v)+2}ch" title="Tap to choose a name">`
+    +(v?"":'<option value="" selected>＋ name</option>')
+    +opts.map(n=>`<option value="${esc(n)}"${n===v?" selected":""}>${esc(n)}</option>`).join("")
+    +'<option value="__other">Someone else…</option>'+(v?'<option value="__none">— none —</option>':"")+'</select>';
+}
+const wch=v=>Math.max(6,String(v||"").length+2);
+const TABCOL=["#ff9500","#34c759","#af52de","#0a84ff"];
+const PAL=["#ff9500","#ff2d55","#af52de","#0a84ff","#34c759","#30b0c7","#ffcc00"];
+const D={items:{},games:{},plan:{}};
+let db=null, pending=false, fStore="all", fState="all", q="";
+const openAdd=new Set(), fresh=new Set(), freshCheck=new Set();
+const seeding={items:false,games:false,plan:false};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rows=(c,fn)=>Object.entries(D[c]).filter(([,v])=>v&&v.kind!=="meta"&&(!fn||fn(v))).map(([id,v])=>({id,...v}));
+const topicRows=()=>rows("items",v=>v.kind==="s"&&v.cat==="Topics").sort((a,b)=>a.ord-b.ord);
+const normStore=s=>(s==="Meijer"||s==="Kroger")?"Kroger / Meijer":s;
+const shopRows=()=>rows("items",v=>v.kind==="p").map(r=>({...r,store:normStore(r.store)})).sort((a,b)=>a.ord-b.ord);
+const gameRows=()=>rows("games",v=>v.kind==="game").sort((a,b)=>a.ord-b.ord);
+const reduced=()=>window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// ---------- seeds (only used the first time the shared page is opened) ----------
+function seedItems(){
+  const o={};
+  SCHED.forEach((r,i)=>{ if(r[1]==="Topics") o["s"+i]={kind:"s",ord:i,day:-1,cat:"Topics",text:r[2]}; });
+  SHOP.forEach((r,i)=>o["p"+i]={kind:"p",ord:1000+i,store:r[1],text:r[0],owner:r[2],qty:r[3],done:false});
+  return o;
+}
+function seedGames(){ const o={}; GSEED.forEach((n,i)=>o["g"+i]={kind:"game",ord:i,name:n}); return o; }
+function seedPlan(){
+  const o={}, rank={Brunch:0,Appetizer:0,Dinner:1,Kids:2};
+  SCHED.forEach((r,i)=>{
+    if(["Games","Topics","Stay"].includes(r[1])) return;
+    o["d"+i]={kind:"dish",day:r[0],meal:r[1]==="Brunch"?"Brunch":"Dinner",ord:rank[r[1]]*100+i,text:r[2]};
+  });
+  for(let d=0;d<5;d++){ const s=SCHED.find(r=>r[0]===d&&r[1]==="Stay"); o["stay"+d]={kind:"stay",day:d,place:s?s[2]:""}; }
+  return o;
+}
+const SEEDS={items:seedItems,games:seedGames,plan:seedPlan};
+
+window.__setLive=function(s){ const el=document.getElementById("live"); if(!el) return; el.className="live"+(s==="live"?" on":""); el.textContent=s==="live"?"● Live":s==="offline"?"○ Reconnecting…":"○ This device only"; };
+if(window.__liveState) window.__setLive(window.__liveState);
+function listText(){
+  const by={}; shopRows().forEach(r=>{ (by[r.store]=by[r.store]||[]).push(r); });
+  return "Thanksgiving 2026 shopping list\n\n"+Object.keys(by).map(st=>{ const w=storeWho(st);
+    return st+(w?" ("+w+")":"")+"\n"+by[st].map(r=>(r.done?"☑ ":"☐ ")+r.text+(r.qty?" — "+r.qty:"")+(whoBuys(r)&&whoBuys(r)!==w?" ["+whoBuys(r)+"]":"")).join("\n"); }).join("\n\n");
+}
+function copyText(t){
+  const ok=()=>showNotice("Copied the shopping list ✓");
+  const fallback=()=>{ const a=document.createElement("textarea"); a.value=t; document.body.appendChild(a); a.select(); try{ document.execCommand("copy"); ok(); }catch(e){ showNotice("Couldn't copy on this browser."); } a.remove(); };
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok,fallback); else fallback();
+}
+function downloadBackup(){
+  const blob=new Blob([JSON.stringify({exported:new Date().toISOString(),data:D},null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="thanksgiving-2026-backup.json"; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+function showNotice(msg,sticky){
+  const n=$("#notice"); n.textContent=msg; n.classList.remove("hide");
+  if(!sticky) setTimeout(()=>n.classList.add("hide"),6000);
+}
+
+// ---------- saving ----------
+const LK=c=>"tg26-"+c+"-v2";
+async function persist(c,id,obj){
+  try{
+    if(db){ if(obj===null) await db.doc(c+"/"+id).delete(); else await db.doc(c+"/"+id).set(obj); }
+    else localStorage.setItem(LK(c),JSON.stringify(D[c]));
+  }catch(e){ showNotice("Couldn't save that change. Check that you have edit access, then try again."); }
+}
+async function upsert(c,id,patch){ const n={...D[c][id],...patch,at:Date.now()}; if(patch.done===true) freshCheck.add(id); D[c][id]=n; renderAll(); await persist(c,id,n); }
+async function add(c,obj){ const id="x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); const f={...obj,ord:Date.now(),at:Date.now()}; fresh.add(id); D[c][id]=f; renderAll(); await persist(c,id,f); }
+async function remove(c,id){ delete D[c][id]; renderAll(); await persist(c,id,null); }
+
+// ---------- fun ----------
+function burst(el,n){
+  if(reduced()||!el) return;
+  const r=el.getBoundingClientRect(), fx=$("#fx"), em=["🎉","🍂","🦃","✨","🥧","🍁","🧡","💛","💜","💚"];
+  n=n||12;
+  for(let i=0;i<n;i++){
+    const s=document.createElement("span");
+    s.textContent=em[Math.floor(Math.random()*em.length)];
+    s.style.left=(r.left+r.width/2)+"px"; s.style.top=(r.top+r.height/2)+"px";
+    s.style.setProperty("--dx",(Math.random()*240-120)+"px");
+    s.style.setProperty("--dy",(-60-Math.random()*160)+"px");
+    s.style.setProperty("--r",(Math.random()*360-180)+"deg");
+    fx.appendChild(s); setTimeout(()=>s.remove(),1200);
+  }
+}
+function spin(list,out){
+  if(!list.length){ out.textContent="Add some first!"; return; }
+  let n=0; const total=16+Math.floor(Math.random()*6);
+  const step=()=>{
+    out.textContent=list[Math.floor(Math.random()*list.length)]; out.classList.add("spinning"); n++;
+    if(n<total) setTimeout(step,55+n*13);
+    else{ out.textContent=list[Math.floor(Math.random()*list.length)]; out.classList.remove("spinning"); out.classList.remove("land"); void out.offsetWidth; out.classList.add("land"); burst(out,16); }
+  };
+  step();
+}
+function renderCount(){
+  const now=new Date(), today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const days=Math.round((new Date(2026,10,26)-today)/86400000);
+  $("#count").textContent=days>1?`${days} days to go`:days===1?"Tomorrow!":days===0?"Happy Thanksgiving! 🎉":days>-4?"Thanksgiving weekend":"2026";
+}
+
+// ---------- rendering ----------
+function renderStats(){
+  const sh=shopRows(), sd=sh.filter(r=>r.done).length;
+  $("#stShop").textContent=sd+" / "+sh.length; $("#brShop").style.width=(sh.length?sd/sh.length*100:0)+"%";
+}
+function renderSched(){
+  const now=new Date(), todayIdx=(now.getFullYear()===2026&&now.getMonth()===10&&now.getDate()>=25&&now.getDate()<=29)?now.getDate()-25:-1;
+  const dishes=rows("plan",v=>v.kind==="dish").sort((a,b)=>a.ord-b.ord);
+  $("#v-schedule").innerHTML=DAYS.map((label,di)=>{
+    const stay=D.plan["stay"+di]||{place:""};
+    const place=stay.place||"";
+    const meals=[["Brunch","🥞 Brunch"],["Dinner","🍛 Dinner"]].map(([m,lab])=>{
+      const its=dishes.filter(r=>r.day===di&&r.meal===m);
+      return its.length?`<div class="meal">${lab}</div>`+its.map(r=>`<div class="row${fresh.has(r.id)?" new":""}"><textarea class="edit" rows="1" data-c="plan" data-id="${r.id}" data-f="text">${esc(r.text)}</textarea><button class="del" data-act="del" data-c="plan" data-id="${r.id}" title="Remove">×</button></div>`).join(""):"";
+    }).join("");
+    return `<div class="card dcard tint${di===todayIdx?" today":""}" style="--c:${DAYCOL[di]}">
+      <h2 class="dayh"><span class="ico">${DAYEMOJI[di]}</span> ${esc(label)}${di===todayIdx?'<span class="tag">TODAY</span>':""}</h2>
+      <div class="stay">🏠 Night stay at <input data-c="plan" data-id="stay${di}" data-f="place" data-kind="stay" data-day="${di}" value="${esc(place)}" placeholder="who?" style="width:${Math.max(5,Math.round(place.length*0.9)+1)}ch">'s place</div>
+      ${meals||""}
+      <div class="adder${openAdd.has("day"+di)?" open":""}" data-adder="day${di}">
+        <button class="plus" data-act="toggleAdd"><span class="pi">＋</span> Add a dish or plan</button>
+        <div class="addwrap"><div class="addinner"><div class="addrow">
+          <input type="text" data-new="text" placeholder="What's happening?">
+          <select data-new="meal"><option>Brunch</option><option selected>Dinner</option></select>
+          <button class="add" data-act="addS" data-day="${di}">Add</button>
+        </div></div></div>
+      </div></div>`;
+  }).join("");
+}
+function shopRow(r){
+  return `<div class="row${fresh.has(r.id)?" new":""}${freshCheck.has(r.id)?" ck":""}">
+    <input type="checkbox" class="chk" id="c_${r.id}" data-c="items" data-id="${r.id}" data-f="done"${r.done?" checked":""} title="Bought?">
+    <label class="txt ${r.done?"done":""}" for="c_${r.id}">${esc(r.text)}${r.qty?` <span class="muted">· ${esc(r.qty)}</span>`:""}</label>
+    ${whoSel(`data-c="items" data-id="${r.id}" data-f="owner" data-ownerset="1"`,whoBuys(r),whoBuys(r)&&whoBuys(r)!==storeWho(r.store))}
+    <button class="del" data-act="del" data-c="items" data-id="${r.id}" title="Remove">×</button>
+  </div>`;
+}
+function storeAdder(st){
+  const key="shop_"+String(st).replace(/[^A-Za-z0-9]+/g,"_");
+  return `<div class="adder${openAdd.has(key)?" open":""}" data-adder="${key}">
+    <button class="plus" data-act="toggleAdd"><span class="pi">＋</span> Add to ${esc(st)}</button>
+    <div class="addwrap"><div class="addinner"><div class="addrow">
+      <input type="text" data-new="text" placeholder="Item">
+      <input class="qty" data-new="qty" placeholder="Qty">
+      <input class="whoin" data-new="who" list="names" placeholder="Who's doing it?">
+      <button class="add" data-act="addPS" data-store="${esc(st)}">Add</button>
+    </div></div></div></div>`;
+}
+function renderShop(){
+  const all=shopRows();
+  const list=all.filter(r=>(fStore==="all"||r.store===fStore)
+    && (fState==="all"||(fState==="done")===!!r.done)
+    && (!q||(r.text+" "+whoBuys(r)+" "+r.store).toLowerCase().includes(q)));
+  const stores=[...new Set([...STORES,...all.map(r=>r.store)])];
+  let html="";
+  stores.forEach(st=>{
+    const its=list.filter(r=>r.store===st); if(!its.length) return;
+    const d=its.filter(r=>r.done).length, all_=its.length;
+    html+=`<div class="store tint" style="--c:${STORECOL[st]||"#8e8e93"}"><div class="store-h"><b><span class="ico sm">${STOREEMOJI[st]||"🛒"}</span>${esc(st)}</b><span>${d===all_?"🎉 all bought":d+" of "+all_+" bought"}</span></div>
+      <div class="mini"><i style="width:${d/all_*100}%"></i></div>
+      <div class="buyer">Buying ${whoSel(`data-storewho="${esc(st)}"`,storeWho(st),true)}</div>
+      <div class="card" style="padding:4px 14px">${its.map(shopRow).join("")}${storeAdder(st)}</div></div>`;
+  });
+  $("#shopList").innerHTML=html||'<div class="muted" style="text-align:center;padding:20px">Nothing matches 🤷</div>';
+}
+function renderGames(){
+  const gs=gameRows();
+  $("#gList").innerHTML=gs.map((g,i)=>`<div class="row${fresh.has(g.id)?" new":""}"><span class="dot" style="--c:${PAL[i%PAL.length]}">🎲</span><span class="gname">${esc(g.name)}</span><button class="del" data-act="del" data-c="games" data-id="${g.id}" title="Remove">×</button></div>`).join("")||'<div class="muted" style="padding:10px 0">No games yet. Add one!</div>';
+}
+function renderTopics(){
+  const rs=topicRows();
+  $("#tList").innerHTML=rs.map((r,i)=>`<div class="row${fresh.has(r.id)?" new":""}"><span class="dot" style="--c:${PAL[i%PAL.length]}">💬</span><span class="txt">${esc(r.text)}</span><button class="del" data-act="del" data-c="items" data-id="${r.id}" title="Remove">×</button></div>`).join("")||'<div class="muted" style="padding:10px 0">No topics yet. Add one!</div>';
+}
+function uiKey(el){
+  const ad=el.closest&&el.closest(".adder");
+  if(ad&&el.dataset.new) return "A|"+ad.dataset.adder+"|"+el.dataset.new;
+  if(el.id) return "I|"+el.id;
+  if(el.dataset.storewho) return "S|"+el.dataset.storewho;
+  if(el.dataset.c&&el.dataset.id&&el.dataset.f) return "F|"+el.dataset.c+"|"+el.dataset.id+"|"+el.dataset.f;
+  return null;
+}
+const findByKey=k=>[...document.querySelectorAll("input,textarea,select")].find(el=>uiKey(el)===k)||null;
+let _cv; function textW(el,txt){ _cv=_cv||document.createElement("canvas").getContext("2d"); _cv.font=getComputedStyle(el).font; return _cv.measureText(txt).width; }
+function fitStay(el){ el.style.width=Math.ceil(textW(el,el.value||el.placeholder||"")+8)+"px"; }
+function autosize(){ document.querySelectorAll("textarea.edit").forEach(t=>{ t.style.height="auto"; t.style.height=t.scrollHeight+"px"; }); document.querySelectorAll(".stay input").forEach(fitStay); }
+function renderAll(){
+  const keep={};
+  document.querySelectorAll(".adder [data-new]").forEach(el=>{ if(el.value) keep["A|"+el.closest(".adder").dataset.adder+"|"+el.dataset.new]=el.value; });
+  const a=document.activeElement; let f=null;
+  if(a&&a.matches&&a.matches("input,textarea")){ const k=uiKey(a); if(k) f={k,v:a.value,s:a.selectionStart,e:a.selectionEnd}; }
+  renderAllInner();
+  Object.entries(keep).forEach(([k,v])=>{ const el=findByKey(k); if(el&&el.value!==v) el.value=v; });
+  autosize();
+  if(f){ const el=findByKey(f.k); if(el&&el.tagName!=="SELECT"){ if(el.value!==f.v) el.value=f.v; el.focus({preventScroll:true}); try{ el.setSelectionRange(f.s,f.e); }catch(e){} autosize(); } }
+}
+function renderAllInner(){
+  [renderCount,renderStats,renderSched,renderShop,renderGames,renderTopics].forEach(f=>{ try{ f(); }catch(e){ console.error(f.name,e); } });
+  fresh.clear(); freshCheck.clear();
+}
+function requestRender(){ const a=document.activeElement; if(a&&a.matches&&a.matches("select,input.who")) pending=true; else renderAll(); }
+
+// ---------- tabs ----------
+function showTab(t,fromHash){
+  if(!TABS.includes(t)) t="schedule";
+  TABS.forEach(k=>$("#v-"+k).classList.toggle("hide",k!==t));
+  document.querySelectorAll("#tabs button[data-tab]").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
+  $("#tabs").style.setProperty("--idx",TABS.indexOf(t));
+  $("#tabs").style.setProperty("--tabc",TABCOL[TABS.indexOf(t)]);
+  document.documentElement.style.setProperty("--accent",TABCOL[TABS.indexOf(t)]);
+  const sec=$("#v-"+t); sec.classList.remove("enter");
+  sec.querySelectorAll(".card,.store-h,.mini").forEach((el,i)=>el.style.setProperty("--d",Math.min(i*0.04,0.4)+"s"));
+  void sec.offsetWidth; sec.classList.add("enter"); setTimeout(()=>sec.classList.remove("enter"),900);
+  if(!fromHash){ try{ location.hash=t; }catch(e){} }
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",()=>showTab(location.hash.slice(1),true));
+
+// ---------- events ----------
+function refocus(key){ const i=document.querySelector(`[data-adder="${key}"] input[data-new="text"]`); if(i) i.focus(); }
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.tab){ showTab(b.dataset.tab); return; }
+  const row=b.closest(".addrow"), val=k=>row?row.querySelector(`[data-new="${k}"]`).value.trim():"";
+  switch(b.dataset.act){
+    case "del":
+      if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="sure?"; setTimeout(()=>{delete b.dataset.armed;b.textContent="×";},3000); return; }
+      { const rowEl=b.closest(".row"); if(rowEl) rowEl.classList.add("out"); const c=b.dataset.c,id=b.dataset.id; setTimeout(()=>remove(c,id),rowEl?230:0); } break;
+    case "toggleAdd":{
+      const a=b.closest(".adder"), k=a.dataset.adder, open=a.classList.toggle("open");
+      if(open) openAdd.add(k); else openAdd.delete(k);
+      if(open) setTimeout(()=>{ const i=a.querySelector("input[data-new=text]"); if(i) i.focus(); },280);
+      break; }
+    case "addS":{ if(!val("text")) return; add("plan",{kind:"dish",day:+b.dataset.day,meal:val("meal"),text:val("text")}); refocus("day"+b.dataset.day); break; }
+    case "addT":{ if(!val("text")) return; add("items",{kind:"s",day:-1,cat:"Topics",text:val("text")}); row.querySelector('[data-new="text"]').value=""; refocus("topics"); break; }
+    case "addG":{ if(!val("text")) return; add("games",{kind:"game",name:val("text")}); row.querySelector('[data-new="text"]').value=""; refocus("games"); break; }
+    case "addP":{ if(!val("text")) return; add("items",{kind:"p",store:val("store"),text:val("text"),owner:val("who"),ownerSet:!!val("who"),qty:val("qty"),done:false}); ["text","qty","who"].forEach(k=>row.querySelector(`[data-new="${k}"]`).value=""); burst(b,6); refocus("shop"); break; }
+    case "addPS":{
+      if(!val("text")) return;
+      add("items",{kind:"p",store:b.dataset.store,text:val("text"),owner:val("who"),ownerSet:!!val("who"),qty:val("qty"),done:false});
+      burst(b,6); refocus(b.closest(".adder").dataset.adder); break; }
+    case "copyList": copyText(listText()); break;
+    case "backup": downloadBackup(); break;
+    case "spinG": spin(gameRows().map(g=>g.name),$("#gResult")); break;
+    case "spinT": spin(topicRows().map(r=>r.text),$("#tResult")); break;
+  }
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&e.target.closest(".addrow")&&e.target.matches("input")) e.target.closest(".addrow").querySelector("button[data-act]").click();
+  if(e.key==="Enter"&&e.target.matches("textarea.edit")){ e.preventDefault(); e.target.blur(); }
+  if(e.key==="Enter"&&e.target.matches("input.edit,.stay input,input.who")) e.target.blur();
+  if(e.key==="Escape"){ const a=e.target.closest&&e.target.closest(".adder"); if(a){ a.classList.remove("open"); openAdd.delete(a.dataset.adder); e.target.blur(); } }
+});
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.id==="fStore"){ fStore=t.value; renderShop(); return; }
+  if(t.id==="fState"){ fState=t.value; renderShop(); return; }
+  if(t.tagName==="SELECT"&&t.classList.contains("who")){
+    if(t.value==="__other"){
+      const inp=document.createElement("input"); inp.className="who"; inp.setAttribute("list","names"); inp.placeholder="type a name"; inp.style.width="11ch";
+      Object.entries(t.dataset).forEach(([k,v])=>inp.dataset[k]=v);
+      t.replaceWith(inp); inp.focus(); inp.addEventListener("blur",()=>{ setTimeout(()=>{ if(!inp.value.trim()) renderAll(); },200); }); return;
+    }
+    if(t.value==="__none") t.value="";
+  }
+  if(t.dataset.storewho){
+    const st=t.dataset.storewho, prev=storeWho(st);
+    // items that still carry the old buyer follow the store; items someone set by hand are left alone
+    shopRows().filter(r=>r.store===st&&!r.ownerSet&&r.owner&&r.owner===prev).forEach(r=>{ const n={...D.items[r.id],owner:"",at:Date.now()}; D.items[r.id]=n; persist("items",r.id,n); });
+    upsert("plan",whoKey(st),{kind:"storewho",store:st,name:t.value.trim()}); return; }
+  if(t.dataset.c&&t.dataset.f){
+    const val=t.type==="checkbox"?t.checked:t.value.trim();
+    if(t.type==="checkbox"&&val) burst(t,10);
+    const c=t.dataset.c, id=t.dataset.id;
+    if(!D[c][id]&&t.dataset.kind==="stay") D[c][id]={kind:"stay",day:+t.dataset.day,place:""};
+    upsert(c,id,t.dataset.ownerset?{[t.dataset.f]:val,ownerSet:true}:{[t.dataset.f]:val});
+  }
+});
+document.addEventListener("input",e=>{ if(e.target.id==="q"){ q=e.target.value.trim().toLowerCase(); renderShop(); } });
+document.addEventListener("focusout",()=>{ if(pending){ pending=false; setTimeout(()=>{ const a=document.activeElement; if(!a||!a.matches||!a.matches("select,input.who")) renderAll(); },150); } });
+document.addEventListener("input",e=>{ if(e.target.matches&&e.target.matches(".stay input")) fitStay(e.target); if(e.target.matches&&e.target.matches("textarea.edit")){ e.target.style.height="auto"; e.target.style.height=e.target.scrollHeight+"px"; } });
+window.addEventListener("resize",autosize); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(autosize);
+
+// ---------- start ----------
+function listen(c){
+  db.collection(c).onSnapshot(snap=>{
+    const next={};
+    (snap.docs||[]).forEach(d=>{ next[d.id]=typeof d.data==="function"?d.data():d.data; });
+    if(!next._seed){
+      D[c]={...SEEDS[c](),...next};
+      if(!seeding[c]){
+        seeding[c]=true;
+        Object.entries({...SEEDS[c](),_seed:{kind:"meta",at:Date.now()}}).forEach(([id,v])=>db.doc(c+"/"+id).set(v).catch(()=>{}));
+      }
+    } else D[c]=next;
+    requestRender();
+  });
+}
+async function init(){
+  $("#names").innerHTML=NAMES.map(n=>`<option value="${esc(n)}">`).join("");
+  const stores=STORES.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join("");
+  $("#fStore").insertAdjacentHTML("beforeend",stores);
+  $("#addStore").innerHTML=stores;
+  showTab(location.hash.slice(1),true);
+  Object.keys(SEEDS).forEach(c=>D[c]=SEEDS[c]());
+  renderAll();
+
+  let api=null;
+  try{ api=window.claude?await window.claude.use("db"):null; }catch(e){ api=null; }
+  if(!api){
+    window.__setLive("local");
+    showNotice("Can't reach the shared list right now, so changes are saved on this device only.",true);
+    Object.keys(SEEDS).forEach(c=>{ try{ const s=JSON.parse(localStorage.getItem(LK(c))); if(s) D[c]=s; }catch(e){} });
+    renderAll(); return;
+  }
+  db=api;
+  Object.keys(SEEDS).forEach(listen);
+}
+init();
+</script>
+</body>
+</html>
