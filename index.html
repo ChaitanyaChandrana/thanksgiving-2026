@@ -269,6 +269,18 @@ main section>:first-child{position:relative;z-index:2;margin-top:-40px!important
 @media(prefers-color-scheme:dark){.scene-t{color:#ffe3c4;text-shadow:0 1px 8px rgba(0,0,0,.5)}.schip{color:#ffd9a8;background:color-mix(in srgb,var(--c,#8a7560) 24%,#2a1f17)}}
 .scene-t.light{color:#fff6e8;text-shadow:0 1px 8px rgba(60,20,10,.45)}
 .foot .linkbtn{background:rgba(255,253,248,.9);color:#7a2e0e;border-radius:99px;padding:8px 14px;margin:2px;font-weight:600}
+.dlist{display:block}
+.dlist .dtile{display:grid!important;grid-template-columns:64px 1fr 30px;grid-template-rows:auto auto;align-items:center;column-gap:12px;row-gap:0;width:100%;flex:none!important;min-height:0!important;padding:10px 14px!important;margin:0 0 8px}
+.dlist .dtile .dt-ico{position:static;grid-area:1/3/3/4;font-size:22px;justify-self:end}
+.dlist .dtile .dt-wk{grid-area:1/2/2/3}
+.dlist .dtile .dt-num{grid-area:1/1/3/2;font-size:30px!important}
+.dlist .dtile .dt-meta:nth-child(5){grid-area:2/2/3/3;display:block;font-size:13px}
+.dlist .dtile .dt-note,.dlist .dtile .dt-meta:last-child{display:none}
+.dlist .dcard{margin:-2px 0 12px;padding:10px 14px 12px}
+.dlist .dcard textarea.edit{font-size:14.5px;line-height:1.35}
+.dlist .dcard .meal{font-size:11.5px}
+.dlist .dcard .stay,.dlist .dcard .stay input{font-size:13.5px}
+.dlist .dcard .dayh{font-size:16px}
 </style>
 </head>
 <body>
@@ -475,7 +487,7 @@ const wch=v=>Math.max(6,String(v||"").length+2);
 const TABCOL=["#d9531e","#6b8e3d","#8c3b5e","#b7791f"];
 const PAL=["#d9531e","#b3263e","#8c3b5e","#b7791f","#6b8e3d","#2f7f73","#e3a008"];
 const D={items:{},games:{},plan:{}};
-let selDay=1, db=null, pending=false, fStore="all", fState="all", fWho="all", q="";
+let selDay=-1, db=null, pending=false, fStore="all", fState="all", fWho="all", q="";
 const openAdd=new Set(), fresh=new Set(), freshCheck=new Set();
 const seeding={items:false,games:false,plan:false};
 const $=s=>document.querySelector(s);
@@ -587,7 +599,7 @@ function renderSched(){
       <span class="dt-meta">${place?`🏠 ${esc(place)}`:"🏠 —"}</span>
       <span class="dt-meta">${n} item${n===1?"":"s"}</span>
     </button>`;
-  }).join("");
+  });
   const detail=DAYS.map((label,di)=>{
     if(di!==selDay) return "";
     const stay=D.plan["stay"+di]||{place:""};
@@ -608,10 +620,8 @@ function renderSched(){
           <button class="add" data-act="addS" data-day="${di}">Add</button>
         </div></div></div>
       </div></div>`;
-  }).join("");
-  const old=$("#v-schedule .dgrid"), keep=old?old.scrollLeft:null;
-  $("#v-schedule").innerHTML=`<div class="dgrid">${tiles}</div>`+(detail||'<p class="dhint">Tap a day to see the plan</p>');
-  const g=$("#v-schedule .dgrid"); if(g){ if(keep!==null) g.scrollLeft=keep; else { const t=g.querySelector(".sel"); if(t) g.scrollLeft=t.offsetLeft-(g.clientWidth-t.offsetWidth)/2; } }
+  });
+  $("#v-schedule").innerHTML=`<div class="dlist">`+tiles.map((t,i)=>t+detail[i]).join("")+`</div>`;
 }
 function shopRow(r){
   return `<div class="row${fresh.has(r.id)?" new":""}${freshCheck.has(r.id)?" ck":""}">
@@ -718,10 +728,10 @@ function startMsg(){
   if(d===1) return "Starts tomorrow!";
   if(d===0) return "It begins today! 🎉";
   if(d===-1) return "Happy Thanksgiving! 🦃";
-  if(d>=-4) return "Thanksgiving weekend";
+  if(d>=-4) return "Thanksgiving week";
   return "2026";
 }
-const PH={schedule:["🗓️","Our weekend","Where we stay and what we eat"],shopping:["🛒","Shopping list","Tick items as you buy them"],games:["🎲","Game night","Pick one, or add your own"],topics:["💬","Let's talk","Ideas for conversation"]};
+const PH={schedule:["🗓️","Thanksgiving week","Where we stay and what we eat"],shopping:["🛒","Shopping list","Tick items as you buy them"],games:["🎲","Game night","Pick one, or add your own"],topics:["💬","Let's talk","Ideas for conversation"]};
 function showTab(t,fromHash){
   if(!TABS.includes(t)) t="schedule";
   { document.querySelector(".scene-t").classList.toggle("light",t==="games"); const p=PH[t]; $("#sceneArt").innerHTML=SCENES[t]; $("#stT").textContent=p[1]; $("#stS").textContent=p[2]; }
