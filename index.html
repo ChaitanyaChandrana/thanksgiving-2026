@@ -729,14 +729,16 @@ function renderAllInner(){
 function requestRender(){ const a=document.activeElement; if(a&&a.matches&&a.matches("select,input.who")) pending=true; else renderAll(); }
 
 
-// ---------- welcome hero ----------
+// ---------- welcome hero (the home page: shown whenever there is no #tab in the address) ----------
 (function(){
   const h=document.getElementById("hero"); if(!h) return;
-  let seen=false; try{ seen=sessionStorage.getItem("tg26-hero")==="1"; }catch(e){}
-  if(seen||location.hash){ h.classList.add("gone"); return; }
-  document.body.style.overflow="hidden";
-  document.getElementById("hCount").textContent=startMsg();
-  window.__closeHero=function(){ h.classList.add("gone"); document.body.style.overflow=""; try{ sessionStorage.setItem("tg26-hero","1"); }catch(e){} };
+  let skip=false; try{ skip=sessionStorage.getItem("tg26-hero")==="1"; }catch(e){}   // test hook only
+  const show=()=>{ h.classList.remove("gone"); document.body.style.overflow="hidden"; document.getElementById("hCount").textContent=startMsg(); };
+  const hide=()=>{ h.classList.add("gone"); document.body.style.overflow=""; };
+  if(!skip&&location.hash){ try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
+  if(skip) hide(); else show();
+  window.addEventListener("hashchange",()=>{ if(location.hash) hide(); else show(); });
+  window.__closeHero=function(){ if(location.hash) hide(); else location.hash="schedule"; };
 })();
 
 // ---------- tabs ----------
