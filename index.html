@@ -237,6 +237,7 @@ select.who.has{font-weight:600;padding:6px 11px}
       <div class="filters">
         <input id="q" type="search" placeholder="🔍 Search the list">
         <select id="fStore"><option value="all">All stores</option></select>
+        <select id="fWho"><option value="all">Everyone</option></select>
         <select id="fState"><option value="all">Everything</option><option value="todo">To buy</option><option value="done">Bought</option></select>
       </div>
       <div class="adder" data-adder="shop">
@@ -396,7 +397,7 @@ const wch=v=>Math.max(6,String(v||"").length+2);
 const TABCOL=["#ff9500","#34c759","#af52de","#0a84ff"];
 const PAL=["#ff9500","#ff2d55","#af52de","#0a84ff","#34c759","#30b0c7","#ffcc00"];
 const D={items:{},games:{},plan:{}};
-let selDay=1, db=null, pending=false, fStore="all", fState="all", q="";
+let selDay=1, db=null, pending=false, fStore="all", fState="all", fWho="all", q="";
 const openAdd=new Set(), fresh=new Set(), freshCheck=new Set();
 const seeding={items:false,games:false,plan:false};
 const $=s=>document.querySelector(s);
@@ -557,9 +558,16 @@ function storeAdder(st){
       <button class="add" data-act="addPS" data-store="${esc(st)}">Add</button>
     </div></div></div></div>`;
 }
+const whoList=r=>String(whoBuys(r)||"").split(/\s*(?:&|\/|,)\s*/).filter(Boolean);
 function renderShop(){
   const all=shopRows();
+  { const names=[...new Set([...NAMES,...all.flatMap(whoList)])].sort((a,b)=>a.localeCompare(b));
+    if(fWho!=="all"&&!names.includes(fWho)) fWho="all";
+    const el=$("#fWho"), sig=names.map(n=>n+all.filter(r=>whoList(r).includes(n)).length).join("|");
+    if(el&&el.dataset.sig!==sig){ el.dataset.sig=sig; el.innerHTML='<option value="all">Everyone</option>'+names.map(n=>{ const c=all.filter(r=>whoList(r).includes(n)).length; return `<option value="${esc(n)}">${esc(n)}${c?" ("+c+")":""}</option>`; }).join(""); }
+    if(el) el.value=fWho; }
   const list=all.filter(r=>(fStore==="all"||r.store===fStore)
+    && (fWho==="all"||whoList(r).includes(fWho))
     && (fState==="all"||(fState==="done")===!!r.done)
     && (!q||(r.text+" "+whoBuys(r)+" "+r.store).toLowerCase().includes(q)));
   const stores=[...new Set([...STORES,...all.map(r=>r.store)])];
@@ -665,6 +673,7 @@ document.addEventListener("keydown",e=>{
 document.addEventListener("change",e=>{
   const t=e.target;
   if(t.id==="fStore"){ fStore=t.value; renderShop(); return; }
+  if(t.id==="fWho"){ fWho=t.value; renderShop(); return; }
   if(t.id==="fState"){ fState=t.value; renderShop(); return; }
   if(t.tagName==="SELECT"&&t.classList.contains("who")){
     if(t.value==="__other"){
