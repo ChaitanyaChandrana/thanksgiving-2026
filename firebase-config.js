@@ -1,9 +1,5 @@
-// Paste your Firebase web-app config here (Firebase console > Project settings > Your apps > Config).
-// Until real values are in place the page still works, but only on each person's own device.
+// Firebase web config. Realtime Database only needs the databaseURL.
 window.FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  appId: "YOUR_APP_ID"
+  databaseURL: "https://thanksgiving-2026-15b76-default-rtdb.firebaseio.com",
+  projectId: "thanksgiving-2026-15b76"
 };
