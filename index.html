@@ -227,6 +227,17 @@ select.who.has{font-weight:600;padding:6px 11px}
 .h-go:active{transform:scale(.96)}
 @media(prefers-color-scheme:dark){#hero{background:linear-gradient(180deg,#3a2112 0%,#6a3216 60%,#9a4a1f 100%);color:#ffe3c4}#hero h2{color:#ffd9a8}.h-line{color:#f3c39a}.h-count{color:#ffb27a}.h-go{background:#ffb27a;color:#3a1a08}}
 @media(prefers-reduced-motion:reduce){.h-body{animation:none}#hero{transition:none}}
+body{background:linear-gradient(180deg,#faf2e6 0%,#f8e4c6 100%) fixed}
+#backdrop{position:fixed;left:0;right:0;bottom:0;height:34vh;z-index:-1;pointer-events:none}
+#backdrop svg{width:100%;height:100%;display:block}
+.pagehead{text-align:center;padding:10px 0 18px}
+.ph-ico{font-size:40px;display:block;line-height:1.1}
+.pagehead h2{font-family:ui-serif,"New York",Georgia,"Times New Roman",serif;font-size:34px;line-height:1.1;margin:4px 0 0;color:#6b250c;letter-spacing:-.01em}
+.pagehead p{margin:6px 0 0;color:#7a3a1a;font-size:16px}
+.card{background:rgba(255,253,248,.92);border-radius:22px;box-shadow:0 6px 22px rgba(122,46,14,.08),0 1px 2px rgba(122,46,14,.06)}
+header{padding-bottom:6px}
+header h1{font-size:24px}
+@media(prefers-color-scheme:dark){body{background:linear-gradient(180deg,#1d1510 0%,#2a1a10 100%) fixed}.pagehead h2{color:#ffd9a8}.pagehead p{color:#f3c39a}.card{background:rgba(42,31,23,.94)}#backdrop svg{opacity:.5}}
 </style>
 </head>
 <body>
@@ -247,6 +258,7 @@ select.who.has{font-weight:600;padding:6px 11px}
     <button class="h-go" data-act="enter">Let's begin</button>
   </div>
 </section>
+<div id="backdrop" aria-hidden="true"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMax slice"><path d="M0 130 Q110 70 230 120 T400 100 V300 H0Z" fill="#e8a65d" opacity=".55"/><path d="M0 190 Q130 130 250 180 T400 165 V300 H0Z" fill="#c8693a" opacity=".6"/><path d="M0 250 Q140 200 270 240 T400 232 V300 H0Z" fill="#8a3b1c" opacity=".75"/></svg></div>
 <header>
   <h1>Thanksgiving</h1>
   <div class="count" id="count">2026</div><span class="live" id="live"></span>
@@ -260,6 +272,7 @@ select.who.has{font-weight:600;padding:6px 11px}
 </div></nav>
 <main>
   <div id="notice" class="notice hide"></div>
+  <div class="pagehead" id="pagehead"><span class="ph-ico" id="phIco"></span><h2 id="phTitle"></h2><p id="phSub"></p></div>
 
   <section id="v-schedule"></section>
 
@@ -662,8 +675,10 @@ function requestRender(){ const a=document.activeElement; if(a&&a.matches&&a.mat
 })();
 
 // ---------- tabs ----------
+const PH={schedule:["🗓️","Our weekend","Where we stay and what we eat"],shopping:["🛒","Shopping list","Tick items as you buy them"],games:["🎲","Game night","Pick one, or add your own"],topics:["💬","Let's talk","Ideas for conversation"]};
 function showTab(t,fromHash){
   if(!TABS.includes(t)) t="schedule";
+  { const p=PH[t]; $("#phIco").textContent=p[0]; $("#phTitle").textContent=p[1]; $("#phSub").textContent=p[2]; }
   TABS.forEach(k=>$("#v-"+k).classList.toggle("hide",k!==t));
   document.querySelectorAll("#tabs button[data-tab]").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   $("#tabs").style.setProperty("--idx",TABS.indexOf(t));
