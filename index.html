@@ -38,8 +38,8 @@ setTimeout(function(){ window.__resolveDb(null); },10000);
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:light dark;--bg:#f2f2f7;--card:#fff;--ink:#000;--muted:#8e8e93;--line:rgba(60,60,67,.16);--accent:#007aff;--green:#34c759;--red:#ff3b30;--fill:#f2f2f7;--seg:rgba(118,118,128,.12);--segon:#fff;--chip:#e5f0ff;--chiptxt:#0a62d0;--shadow:0 1px 2px rgba(0,0,0,.06)}
-@media(prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--ink:#fff;--muted:#98989f;--line:rgba(84,84,88,.55);--fill:#2c2c2e;--seg:rgba(118,118,128,.24);--segon:#636366;--chip:#12304f;--chiptxt:#6cb0ff;--shadow:none}}
+:root{color-scheme:light dark;--bg:#faf2e6;--card:#fffdf8;--ink:#3a2a1f;--muted:#8a7560;--line:rgba(110,70,30,.16);--accent:#d9531e;--green:#6b8e3d;--red:#b3263e;--fill:#f5ebdc;--seg:rgba(120,84,40,.1);--segon:#fff;--chip:#fbe9d8;--chiptxt:#9a3d12;--shadow:0 1px 2px rgba(0,0,0,.06)}
+@media(prefers-color-scheme:dark){:root{--bg:#1d1510;--card:#2a1f17;--ink:#f6ebdd;--muted:#98989f;--line:rgba(84,84,88,.55);--fill:#35271d;--seg:rgba(118,118,128,.24);--segon:#5a4535;--chip:#4a2a18;--chiptxt:#ffb27a;--shadow:none}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Inter","Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:17px;line-height:1.35;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
@@ -130,11 +130,12 @@ button.add:active{opacity:.7;transform:scale(.97)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* ---- color layer ---- */
-header{max-width:none;padding:max(28px,env(safe-area-inset-top)) max(20px,calc((100% - 760px)/2 + 20px)) 16px;background:radial-gradient(120% 150% at 0% 0%,rgba(255,159,10,.38),transparent 55%),radial-gradient(100% 130% at 100% 0%,rgba(255,55,95,.28),transparent 55%),radial-gradient(90% 120% at 55% 130%,rgba(191,90,242,.26),transparent 60%)}
-h1{display:inline-block;background:linear-gradient(90deg,#ff9500,#ff2d55 55%,#af52de);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
-.count{display:inline-block;margin-top:6px;background:rgba(255,149,0,.18);color:#b25f00;padding:4px 13px;border-radius:99px;font-size:15px;font-weight:600}
-.bar i{background:linear-gradient(90deg,#34c759,#a8e063)}
-.thumb{background:var(--tabc,#ff9500);box-shadow:0 4px 12px color-mix(in srgb,var(--tabc,#ff9500) 45%,transparent);transition:transform .4s cubic-bezier(.3,1.3,.5,1),background .3s,box-shadow .3s}
+header{max-width:none;padding:max(24px,env(safe-area-inset-top)) max(20px,calc((100% - 760px)/2 + 20px)) 16px;background:linear-gradient(180deg,#f7dcb8 0%,#faf2e6 100%)}
+@media(prefers-color-scheme:dark){header{background:linear-gradient(180deg,#3a2314 0%,#1d1510 100%)}h1{color:#ffc58f;-webkit-text-fill-color:#ffc58f}}
+h1{font-family:ui-serif,"New York",Georgia,"Times New Roman",serif;font-weight:700;color:#7a2e0e;-webkit-text-fill-color:#7a2e0e;background:none}
+.count{display:inline-block;margin-top:6px;background:rgba(217,83,30,.18);color:#9a3d12;padding:4px 13px;border-radius:99px;font-size:15px;font-weight:600}
+.bar i{background:linear-gradient(90deg,#6b8e3d,#a3b86c)}
+.thumb{background:var(--tabc,#d9531e);box-shadow:0 4px 12px color-mix(in srgb,var(--tabc,#d9531e) 45%,transparent);transition:transform .4s cubic-bezier(.3,1.3,.5,1),background .3s,box-shadow .3s}
 nav button{transition:color .25s,transform .15s}
 nav button.on{color:#fff}
 nav button.on small{color:rgba(255,255,255,.85)}
@@ -155,9 +156,9 @@ nav button.on small{color:rgba(255,255,255,.85)}
 .dcard button.add{background:var(--c)}
 .dcard input:focus,.dcard select:focus{outline-color:var(--c)}
 .dot{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;font-size:18px;flex:0 0 auto;background:color-mix(in srgb,var(--c) 22%,transparent)}
-.picker button.big{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 50%,#ff2d55));box-shadow:0 8px 20px color-mix(in srgb,var(--accent) 40%,transparent)}
+.picker button.big{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 50%,#b3263e));box-shadow:0 8px 20px color-mix(in srgb,var(--accent) 40%,transparent)}
 .result{color:var(--accent)}
-@media(prefers-color-scheme:dark){.count{background:rgba(255,159,10,.22);color:#ffb340}.tint{--ct:color-mix(in srgb,var(--c) 70%,#fff)}}
+@media(prefers-color-scheme:dark){.count{background:rgba(217,83,30,.22);color:#ffa05c}.tint{--ct:color-mix(in srgb,var(--c) 70%,#fff)}}
 .who{width:auto;background:transparent;border:0;border-bottom:1.5px dashed var(--line);border-radius:0;padding:1px 3px;font-size:13px;font-weight:600;color:var(--ct,var(--accent));text-align:center;flex:0 0 auto}
 .who::placeholder{color:var(--muted);font-weight:500;opacity:.8}
 .who.has{background:color-mix(in srgb,var(--c,var(--accent)) 17%,transparent);border-bottom:0;border-radius:99px;padding:3px 11px}
@@ -213,33 +214,42 @@ select.who.has{font-weight:600;padding:6px 11px}
 @keyframes dopen{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .dhint{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 0}
 @media(prefers-reduced-motion:reduce){.dcard{animation:none}.dtile{transition:none}}
-.welcome{margin:10px 0 12px;padding:14px 14px 12px;border-radius:22px;background:rgba(255,255,255,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 1px 2px rgba(0,0,0,.05),inset 0 0 0 1px rgba(255,255,255,.7)}
-.welcome p{margin:0}
-.w-hi{font-size:22px;font-weight:700;letter-spacing:-.015em}
-.w-sub{margin-top:4px!important;font-size:14.5px;line-height:1.4;color:var(--muted)}
-.w-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.w-chips span{font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:99px;background:rgba(255,149,0,.14);color:#a85a00}
-.w-me{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:nowrap}
-.w-me label{font-weight:600}
-.w-me select{flex:0 1 130px;min-width:0}
-.w-go{white-space:nowrap}
-.w-go{border:0;border-radius:99px;background:var(--accent);color:#fff;font:inherit;font-weight:600;font-size:15px;padding:9px 12px;font-size:14px;cursor:pointer}
-.w-go[hidden]{display:none}
-.w-msg{margin-top:10px!important;font-size:14.5px;font-weight:600;color:#a85a00}
-@media(prefers-color-scheme:dark){.welcome{background:rgba(44,44,46,.6);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}.w-chips span{background:rgba(255,159,10,.2);color:#ffb340}.w-msg{color:#ffb340}}
+#hero{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;text-align:center;background:linear-gradient(180deg,#fbe3c2 0%,#f6c58c 55%,#e9a064 100%);color:#5a210b;transition:opacity .5s ease,transform .6s ease,visibility .6s}
+#hero.gone{opacity:0;transform:translateY(-16px);visibility:hidden;pointer-events:none}
+.h-art{position:absolute;inset:0;width:100%;height:100%}
+.h-body{position:relative;padding:0 28px 8vh;max-width:460px;animation:hrise .9s ease both}
+@keyframes hrise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.h-emoji{font-size:64px;margin-bottom:6px}
+#hero h2{font-family:ui-serif,"New York",Georgia,"Times New Roman",serif;font-size:clamp(38px,11vw,54px);line-height:1.05;margin:0;letter-spacing:-.01em;color:#6b250c}
+.h-line{margin:12px 0 0;font-size:19px;color:#7a3a1a}
+.h-count{margin:14px 0 0;font-weight:600;color:#9a3d12}
+.h-go{margin-top:26px;border:0;border-radius:99px;background:#7a2e0e;color:#fff6e8;font:inherit;font-weight:600;font-size:18px;padding:15px 34px;cursor:pointer;box-shadow:0 8px 22px rgba(122,46,14,.35);transition:transform .15s}
+.h-go:active{transform:scale(.96)}
+@media(prefers-color-scheme:dark){#hero{background:linear-gradient(180deg,#3a2112 0%,#6a3216 60%,#9a4a1f 100%);color:#ffe3c4}#hero h2{color:#ffd9a8}.h-line{color:#f3c39a}.h-count{color:#ffb27a}.h-go{background:#ffb27a;color:#3a1a08}}
+@media(prefers-reduced-motion:reduce){.h-body{animation:none}#hero{transition:none}}
 </style>
 </head>
 <body>
+<section id="hero" role="dialog" aria-label="Welcome">
+  <svg class="h-art" viewBox="0 0 400 800" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <circle cx="300" cy="170" r="70" fill="#ffd9a0" opacity=".75"/>
+    <circle cx="300" cy="170" r="110" fill="#ffd9a0" opacity=".25"/>
+    <path d="M0 640 Q110 560 230 620 T400 600 V800 H0Z" fill="#e8a65d" opacity=".75"/>
+    <path d="M0 700 Q130 630 250 690 T400 670 V800 H0Z" fill="#c8693a" opacity=".85"/>
+    <path d="M0 760 Q140 700 270 750 T400 740 V800 H0Z" fill="#8a3b1c"/>
+    <g fill="#d9531e" opacity=".8"><path d="M60 120c18-20 40-18 46 6-22 4-36 2-46-6z"/><path d="M330 330c14-18 34-16 40 4-18 4-30 3-40-4z" fill="#e3a008"/><path d="M40 420c16-16 34-14 38 6-18 3-28 2-38-6z" fill="#b3263e"/><path d="M350 520c12-14 28-12 32 4-14 3-24 2-32-4z"/></g>
+  </svg>
+  <div class="h-body">
+    <div class="h-emoji">🦃</div>
+    <h2>Happy Thanksgiving</h2>
+    <p class="h-line">We're so glad you're here</p>
+    <p class="h-count" id="hCount"></p>
+    <button class="h-go" data-act="enter">Let's begin</button>
+  </div>
+</section>
 <header>
   <h1>Thanksgiving</h1>
   <div class="count" id="count">2026</div><span class="live" id="live"></span>
-  <div class="welcome" id="welcome">
-    <p class="w-hi"><span id="wHi">Welcome, friends &amp; family!</span> 🧡</p>
-    <p class="w-sub">So glad you're here! Our whole weekend lives on this page, and every little thing you add or tick off helps. Thank you!</p>
-    <div class="w-chips"><span>📅 Nightly stays</span><span>🛒 Tick as you buy</span><span>🎲 Add games &amp; topics</span></div>
-    <div class="w-me"><label for="me">I'm</label><select id="me"><option value="">pick your name</option></select><button class="w-go" data-act="myList" hidden>See my shopping list →</button></div>
-    <p class="w-msg" id="wMsg"></p>
-  </div>
   <div class="prog"><div class="lbl"><span>Shopping</span><b id="stShop">0 / 0</b></div><div class="bar"><i id="brShop"></i></div></div>
 </header>
 <nav><div class="seg" id="tabs"><i class="thumb"></i>
@@ -401,8 +411,8 @@ const GSEED=["Mafia","Slip it in","Imposter","Wits n Wagers","Codenames","Priya 
 const TABS=["schedule","shopping","games","topics"];
 const DAYEMOJI=["🧳","🦃","🛍️","🎉","👋"];
 const STOREEMOJI={"Kroger / Meijer":"🛍️","Costco":"🏬","Meijer":"🛍️","Patel":"🌶️","Indian store":"🥘","Kroger":"🥕","Halal":"🍗","Other":"📦"};
-const DAYCOL=["#5e5ce6","#ff9500","#ff2d55","#af52de","#30b0c7"];
-const STORECOL={"Kroger / Meijer":"#ff3b30","Costco":"#0a84ff","Meijer":"#ff3b30","Patel":"#ff9500","Indian store":"#af52de","Kroger":"#34c759","Halal":"#14b8a6","Other":"#8e8e93"};
+const DAYCOL=["#a8741a","#d9531e","#b3263e","#c28a00","#6b8e3d"];
+const STORECOL={"Kroger / Meijer":"#b3263e","Costco":"#b7791f","Meijer":"#b3263e","Patel":"#d9531e","Indian store":"#8c3b5e","Kroger":"#6b8e3d","Halal":"#2f7f73","Other":"#8a7560"};
 const STOREWHO={"Kroger / Meijer":"Rakesh","Costco":"Chaitu","Kroger":"Rakesh","Indian store":"Madhu"};
 const whoKey=st=>"who_"+String(st).replace(/[^A-Za-z0-9]+/g,"_");
 const storeWho=st=>{ const d=D.plan[whoKey(st)]; return d?(d.name||""):(STOREWHO[st]||""); };
@@ -415,8 +425,8 @@ function whoSel(attrs,v,custom){
     +'<option value="__other">Someone else…</option>'+(v?'<option value="__none">— none —</option>':"")+'</select>';
 }
 const wch=v=>Math.max(6,String(v||"").length+2);
-const TABCOL=["#ff9500","#34c759","#af52de","#0a84ff"];
-const PAL=["#ff9500","#ff2d55","#af52de","#0a84ff","#34c759","#30b0c7","#ffcc00"];
+const TABCOL=["#d9531e","#6b8e3d","#8c3b5e","#b7791f"];
+const PAL=["#d9531e","#b3263e","#8c3b5e","#b7791f","#6b8e3d","#2f7f73","#e3a008"];
 const D={items:{},games:{},plan:{}};
 let selDay=1, db=null, pending=false, fStore="all", fState="all", fWho="all", q="";
 const openAdd=new Set(), fresh=new Set(), freshCheck=new Set();
@@ -515,16 +525,6 @@ function renderCount(){
 }
 
 // ---------- rendering ----------
-let me="";
-try{ me=localStorage.getItem("tg26-me")||""; }catch(e){}
-function renderWelcome(){
-  const sh=shopRows(), sd=sh.filter(r=>r.done).length, n=sh.length, p=n?sd/n:0;
-  const sel=$("#me"); if(sel&&!sel.dataset.ok){ sel.dataset.ok=1; sel.innerHTML='<option value="">pick your name</option>'+NAMES.map(x=>`<option>${esc(x)}</option>`).join(""); }
-  if(sel) sel.value=me;
-  $("#wHi").textContent=me?`Hi ${me}, welcome!`:"Welcome, friends & family!";
-  const go=document.querySelector(".w-go"); if(go){ go.hidden=!me; if(me){ const c=sh.filter(r=>whoList(r).includes(me)).length; go.textContent=c?`See my ${c} item${c===1?"":"s"} →`:"Browse the shopping list →"; } }
-  $("#wMsg").textContent=!n?"Everything's planned. Let's make it a great one! 🦃":sd===n?"All shopped! Time to feast. You're all wonderful! 🎉":p>=.5?`More than halfway: ${sd} of ${n} items done. Amazing teamwork! 🙌`:sd>0?`${sd} of ${n} items already bought. Great start, thank you! 💛`:"Nothing's been ticked yet, so you can be the first. 🛒";
-}
 function renderStats(){
   const sh=shopRows(), sd=sh.filter(r=>r.done).length;
   $("#stShop").textContent=sd+" / "+sh.length; $("#brShop").style.width=(sh.length?sd/sh.length*100:0)+"%";
@@ -606,7 +606,7 @@ function renderShop(){
   stores.forEach(st=>{
     const its=list.filter(r=>r.store===st); if(!its.length) return;
     const d=its.filter(r=>r.done).length, all_=its.length;
-    html+=`<div class="store tint" style="--c:${STORECOL[st]||"#8e8e93"}"><div class="store-h"><b><span class="ico sm">${STOREEMOJI[st]||"🛒"}</span>${esc(st)}</b><span>${d===all_?"🎉 all bought":d+" of "+all_+" bought"}</span></div>
+    html+=`<div class="store tint" style="--c:${STORECOL[st]||"#8a7560"}"><div class="store-h"><b><span class="ico sm">${STOREEMOJI[st]||"🛒"}</span>${esc(st)}</b><span>${d===all_?"🎉 all bought":d+" of "+all_+" bought"}</span></div>
       <div class="mini"><i style="width:${d/all_*100}%"></i></div>
       <div class="buyer">Buying ${whoSel(`data-storewho="${esc(st)}"`,storeWho(st),true)}</div>
       <div class="card" style="padding:4px 14px">${its.map(shopRow).join("")}${storeAdder(st)}</div></div>`;
@@ -644,10 +644,22 @@ function renderAll(){
   if(f){ const el=findByKey(f.k); if(el&&el.tagName!=="SELECT"){ if(el.value!==f.v) el.value=f.v; el.focus({preventScroll:true}); try{ el.setSelectionRange(f.s,f.e); }catch(e){} autosize(); } }
 }
 function renderAllInner(){
-  [renderCount,renderWelcome,renderStats,renderSched,renderShop,renderGames,renderTopics].forEach(f=>{ try{ f(); }catch(e){ console.error(f.name,e); } });
+  [renderCount,renderStats,renderSched,renderShop,renderGames,renderTopics].forEach(f=>{ try{ f(); }catch(e){ console.error(f.name,e); } });
   fresh.clear(); freshCheck.clear();
 }
 function requestRender(){ const a=document.activeElement; if(a&&a.matches&&a.matches("select,input.who")) pending=true; else renderAll(); }
+
+
+// ---------- welcome hero ----------
+(function(){
+  const h=document.getElementById("hero"); if(!h) return;
+  let seen=false; try{ seen=sessionStorage.getItem("tg26-hero")==="1"; }catch(e){}
+  if(seen||location.hash){ h.classList.add("gone"); return; }
+  document.body.style.overflow="hidden";
+  const now=new Date(), today=new Date(now.getFullYear(),now.getMonth(),now.getDate()), d=Math.round((new Date(2026,10,26)-today)/86400000);
+  document.getElementById("hCount").textContent=d>1?d+" days to go":d===1?"Tomorrow!":d===0?"Today's the day!":"Hope it's a lovely weekend";
+  window.__closeHero=function(){ h.classList.add("gone"); document.body.style.overflow=""; try{ sessionStorage.setItem("tg26-hero","1"); }catch(e){} };
+})();
 
 // ---------- tabs ----------
 function showTab(t,fromHash){
@@ -675,7 +687,7 @@ document.addEventListener("click",e=>{
     case "del":
       if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="sure?"; setTimeout(()=>{delete b.dataset.armed;b.textContent="×";},3000); return; }
       { const rowEl=b.closest(".row"); if(rowEl) rowEl.classList.add("out"); const c=b.dataset.c,id=b.dataset.id; setTimeout(()=>remove(c,id),rowEl?230:0); } break;
-    case "myList":{ fWho=me||"all"; showTab("shopping"); renderShop(); break; }
+    case "enter": window.__closeHero&&window.__closeHero(); break;
     case "pickDay":{ const d=+b.dataset.day; selDay=(d===selDay||d<0)?-1:d; renderAll(); break; }
     case "toggleAdd":{
       const a=b.closest(".adder"), k=a.dataset.adder, open=a.classList.toggle("open");
@@ -705,7 +717,6 @@ document.addEventListener("keydown",e=>{
 document.addEventListener("change",e=>{
   const t=e.target;
   if(t.id==="fStore"){ fStore=t.value; renderShop(); return; }
-  if(t.id==="me"){ me=t.value; try{ localStorage.setItem("tg26-me",me); }catch(e){} renderWelcome(); return; }
   if(t.id==="fWho"){ fWho=t.value; renderShop(); return; }
   if(t.id==="fState"){ fState=t.value; renderShop(); return; }
   if(t.tagName==="SELECT"&&t.classList.contains("who")){
