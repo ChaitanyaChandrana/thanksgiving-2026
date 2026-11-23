@@ -345,6 +345,17 @@ body.is-dragging{user-select:none;-webkit-user-select:none}
 .ci.on .ci-t::before{content:"✓ ";font-weight:700}
 .cm-add{display:block;width:100%;margin-top:10px;border:0;border-bottom:1.5px solid var(--line);border-radius:0;background:transparent;padding:8px 2px;font:inherit;font-size:14.5px}
 .cm-add:focus{outline:none;border-bottom-color:var(--c,#d9531e)}
+.chkwrap{flex:none;display:grid;place-items:center;width:44px;height:44px;margin:-8px -6px -8px -4px;cursor:pointer}
+.itm{flex:1;min-width:0;display:flex;flex-direction:column;gap:0}
+.itm textarea.itxt{width:100%;font-size:17px;line-height:1.3;padding:2px 0}
+.itm textarea.itxt.done{color:var(--muted);text-decoration:line-through}
+.iqty{border:0;background:transparent;padding:0;font:inherit;font-size:13.5px;color:var(--muted);width:100%}
+.iqty::placeholder{color:var(--muted);opacity:.45}
+.iqty:focus{outline:none;color:var(--ink)}
+.itm textarea:focus,.hrow textarea.edit:focus{outline:none;background:color-mix(in srgb,var(--accent,#d9531e) 9%,transparent);border-radius:6px}
+.hrow .row textarea.edit{border:0;background:transparent;resize:none;font:inherit;font-size:15px;padding:2px 4px;margin:0;color:inherit;overflow:hidden}
+.hrow #gList .gname,#gList .gname{width:130px}
+#tList .txt{width:190px}
 </style>
 </head>
 <body>
@@ -712,8 +723,8 @@ function renderSched(){
 }
 function shopRow(r){
   return `<div class="row${fresh.has(r.id)?" new":""}${freshCheck.has(r.id)?" ck":""}">
-    <span class="grip" data-c="items" data-id="${r.id}" title="Drag to reorder">⋮⋮</span><input type="checkbox" class="chk" id="c_${r.id}" data-c="items" data-id="${r.id}" data-f="done"${r.done?" checked":""} title="Bought?">
-    <label class="txt ${r.done?"done":""}" for="c_${r.id}">${esc(r.text)}${r.qty?` <span class="muted">· ${esc(r.qty)}</span>`:""}</label>
+    <span class="grip" data-c="items" data-id="${r.id}" title="Drag to reorder">⋮⋮</span><label class="chkwrap"><input type="checkbox" class="chk" id="c_${r.id}" data-c="items" data-id="${r.id}" data-f="done"${r.done?" checked":""} title="Mark as bought"></label>
+    <div class="itm"><textarea class="edit itxt${r.done?" done":""}" rows="1" data-c="items" data-id="${r.id}" data-f="text" aria-label="Item name">${esc(r.text)}</textarea><input class="iqty" data-c="items" data-id="${r.id}" data-f="qty" value="${esc(r.qty||"")}" placeholder="add qty" aria-label="Quantity" autocomplete="off"></div>
     ${whoSel(`data-c="items" data-id="${r.id}" data-f="owner" data-ownerset="1"`,whoBuys(r),whoBuys(r)&&whoBuys(r)!==storeWho(r.store))}
     <button class="del" data-act="del" data-c="items" data-id="${r.id}" title="Remove">×</button>
   </div>`;
@@ -758,11 +769,11 @@ function renderShop(){
 }
 function renderGames(){
   const gs=gameRows();
-  $("#gList").innerHTML=gs.map((g,i)=>`<div class="row${fresh.has(g.id)?" new":""}"><span class="grip" data-c="games" data-id="${g.id}" title="Drag to reorder">⋮⋮</span><span class="dot" style="--c:${PAL[i%PAL.length]}">🎲</span><span class="gname">${esc(g.name)}</span><button class="del" data-act="del" data-c="games" data-id="${g.id}" title="Remove">×</button></div>`).join("")||'<div class="muted" style="padding:10px 0">No games yet. Add one!</div>';
+  $("#gList").innerHTML=gs.map((g,i)=>`<div class="row${fresh.has(g.id)?" new":""}"><span class="grip" data-c="games" data-id="${g.id}" title="Drag to reorder">⋮⋮</span><span class="dot" style="--c:${PAL[i%PAL.length]}">🎲</span><textarea class="edit gname" rows="1" data-c="games" data-id="${g.id}" data-f="name" aria-label="Game name">${esc(g.name)}</textarea><button class="del" data-act="del" data-c="games" data-id="${g.id}" title="Remove">×</button></div>`).join("")||'<div class="muted" style="padding:10px 0">No games yet. Add one!</div>';
 }
 function renderTopics(){
   const rs=topicRows();
-  $("#tList").innerHTML=rs.map((r,i)=>`<div class="row${fresh.has(r.id)?" new":""}"><span class="grip" data-c="items" data-id="${r.id}" title="Drag to reorder">⋮⋮</span><span class="dot" style="--c:${PAL[i%PAL.length]}">💬</span><span class="txt">${esc(r.text)}</span><button class="del" data-act="del" data-c="items" data-id="${r.id}" title="Remove">×</button></div>`).join("")||'<div class="muted" style="padding:10px 0">No topics yet. Add one!</div>';
+  $("#tList").innerHTML=rs.map((r,i)=>`<div class="row${fresh.has(r.id)?" new":""}"><span class="grip" data-c="items" data-id="${r.id}" title="Drag to reorder">⋮⋮</span><span class="dot" style="--c:${PAL[i%PAL.length]}">💬</span><textarea class="edit txt" rows="1" data-c="items" data-id="${r.id}" data-f="text" aria-label="Topic">${esc(r.text)}</textarea><button class="del" data-act="del" data-c="items" data-id="${r.id}" title="Remove">×</button></div>`).join("")||'<div class="muted" style="padding:10px 0">No topics yet. Add one!</div>';
 }
 function uiKey(el){
   const ad=el.closest&&el.closest(".adder");
@@ -903,6 +914,7 @@ document.addEventListener("change",e=>{
     upsert("plan",whoKey(st),{kind:"storewho",store:st,name:t.value.trim()}); return; }
   if(t.dataset.c&&t.dataset.f){
     const val=t.type==="checkbox"?t.checked:t.value.trim();
+    if((t.dataset.f==="text"||t.dataset.f==="name")&&!val){ renderAll(); return; }
     if(t.type==="checkbox"&&val) burst(t,10);
     const c=t.dataset.c, id=t.dataset.id;
     if(!D[c][id]&&t.dataset.kind==="stay") D[c][id]={kind:"stay",day:+t.dataset.day,place:""};
